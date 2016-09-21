@@ -32,13 +32,6 @@ public class TestUpdateUdf extends UDF {
   }
 
   public Text evaluate() {
-    return new Text("New UDF");
-  }
-
-  // Use this function instead of the other evaluate to regenerate the checked in jar.
-  /*
-  public Text evaluate() {
     return new Text("Old UDF");
   }
-  */
 }
