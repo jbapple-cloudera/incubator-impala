@@ -85,7 +85,7 @@ Status HdfsAvroScanner::Codegen(HdfsScanNodeBase* node,
   }
   LlvmCodeGen* codegen;
   RETURN_IF_ERROR(node->runtime_state()->GetCodegen(&codegen));
-  Function* materialize_tuple_fn;
+  Function* materialize_tuple_fn = NULL;
   RETURN_IF_ERROR(CodegenMaterializeTuple(node, codegen, &materialize_tuple_fn));
   DCHECK(materialize_tuple_fn != NULL);
   RETURN_IF_ERROR(CodegenDecodeAvroData(node->runtime_state(), materialize_tuple_fn,
@@ -920,7 +920,7 @@ Status HdfsAvroScanner::CodegenReadRecord(
 
     // Write read_field_block IR
     builder->SetInsertPoint(read_field_block);
-    Value* ret_val;
+    Value *ret_val = nullptr;
     if (field->schema->type == AVRO_RECORD) {
       BasicBlock* insert_before_block =
           (null_block != NULL) ? null_block : end_field_block;

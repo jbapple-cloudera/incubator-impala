@@ -1,0 +1,42 @@
+# PATH=/opt/Impala-Toolchain/llvm-3.8.0-p1/bin/:$PATH /opt/Impala-Toolchain/llvm-3.8.0-p1/share/clang/run-clang-tidy.py -header-filter='be/src'
+# -header-filter=be/src
+#for DIR in $(ls -d be/src/*/); do if ! (echo "${DIR}" | grep -q -E "thirdparty|gutil"); then PATH=/opt/Impala-Toolchain/llvm-3.8.0-p1/bin/:$PATH echo /opt/Impala-Toolchain/llvm-3.8.0-p1/share/clang/run-clang-tidy.py -header-filter='be/src' -j32 -fix -format "${DIR}"; fi; done
+---
+#Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*'
+#Checks:          '-*,misc-static-assert,misc-assert-side-effect,clang-diagnostic-*,-clang-diagnostic-unused-local-typedef,-clang-diagnostic-unused-function,-clang-diagnostic-unused-const-variable'
+Checks: "-*,\
+misc-static-assert,\
+misc-assert-side-effect,\
+clang-diagnostic-*,\
+-clang-diagnostic-unused-local-typedef,\
+-clang-diagnostic-unused-function,\
+-clang-diagnostic-unused-const-variable,\
+clang-analyzer-*,\
+-clang-analyzer-core.CallAndMessage,\
+-clang-analyzer-alpha*,\
+-clang-analyzer-optin.performance.Padding"
+HeaderFilterRegex: 'be/src/'
+AnalyzeTemporaryDtors: true
+CheckOptions:
+  - key:             misc-assert-side-effect.AssertMacros
+    value:           assert,DCHECK,DCHECK_EQ,DCHECK_GE,DCHECK_GT,DCHECK_LE,DCHECK_LT,DCHECK_NE,DCHECK_NO_OVERLAP,DCHECK_NOTNULL
+  # - key:             google-readability-braces-around-statements.ShortStatementLines
+  #   value:           '1'
+  # - key:             google-readability-function-size.StatementThreshold
+  #   value:           '800'
+  # - key:             google-readability-namespace-comments.ShortNamespaceLines
+  #   value:           '10'
+  # - key:             google-readability-namespace-comments.SpacesBeforeComments
+  #   value:           '2'
+  # - key:             modernize-loop-convert.MaxCopySize
+  #   value:           '16'
+  # - key:             modernize-loop-convert.MinConfidence
+  #   value:           reasonable
+  # - key:             modernize-loop-convert.NamingStyle
+  #   value:           CamelCase
+  # - key:             modernize-pass-by-value.IncludeStyle
+  #   value:           llvm
+  # - key:             modernize-replace-auto-ptr.IncludeStyle
+  #   value:           llvm
+  # - key:             modernize-use-nullptr.NullMacros
+  #   value:           'NULL'
