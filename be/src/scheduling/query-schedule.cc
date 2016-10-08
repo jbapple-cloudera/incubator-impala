@@ -50,7 +50,6 @@ QuerySchedule::QuerySchedule(const TUniqueId& query_id,
     query_options_(query_options),
     summary_profile_(summary_profile),
     query_events_(query_events),
-    num_fragment_instances_(0),
     num_scan_ranges_(0),
     next_instance_id_(query_id),
     is_admitted_(false) {

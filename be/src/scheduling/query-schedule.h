@@ -231,10 +231,6 @@ class QuerySchedule {
   /// The set of hosts that the query will run on excluding the coordinator.
   boost::unordered_set<TNetworkAddress> unique_hosts_;
 
-  /// Number of backends executing plan fragments on behalf of this query.
-  /// TODO-MT: remove
-  int64_t num_fragment_instances_;
-
   /// Total number of scan ranges of this query.
   int64_t num_scan_ranges_;
 

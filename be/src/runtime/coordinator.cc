@@ -375,14 +375,14 @@ Coordinator::Coordinator(const QuerySchedule& schedule, ExecEnv* exec_env,
     RuntimeProfile::EventSequence* events)
   : schedule_(schedule),
     exec_env_(exec_env),
-    has_called_wait_(false),
-    returned_all_results_(false),
     query_mem_tracker_(), // Set in Exec()
     num_remaining_fragment_instances_(0),
     obj_pool_(new ObjectPool()),
     query_events_(events),
+    filter_mode_(schedule.query_options().runtime_filter_mode),
+    has_called_wait_(false),
+    returned_all_results_(false),
     filter_routing_table_complete_(false),
-    filter_mode_(schedule_.query_options().runtime_filter_mode),
     torn_down_(false) {}
 
 Coordinator::~Coordinator() {
@@ -654,7 +654,6 @@ void Coordinator::MtStartFInstances() {
 
   DebugOptions debug_options;
   ProcessQueryOptions(schedule_.query_options(), &debug_options);
-  const TQueryExecRequest& request = schedule_.request();
 
   VLOG_QUERY << "starting " << num_fragment_instances << " fragment instances for query "
              << query_id_;
@@ -1339,7 +1338,6 @@ void Coordinator::MtInitExecSummary() {
 }
 
 void Coordinator::MtInitExecProfiles() {
-  const TQueryExecRequest& request = schedule_.request();
   vector<const TPlanFragment*> fragments;
   schedule_.GetTPlanFragments(&fragments);
   fragment_profiles_.resize(fragments.size());

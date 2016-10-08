@@ -427,11 +427,6 @@ Status ImpalaServer::QueryExecState::ExecQueryOrDmlRequest(
     summary_profile_.AddInfoString(TABLES_WITH_CORRUPT_STATS_KEY, ss.str());
   }
 
-  bool is_mt_exec = query_exec_request.query_ctx.request.query_options.mt_dop > 0;
-  const TPlanFragment& fragment = is_mt_exec
-      ? query_exec_request.mt_plan_exec_info[0].fragments[0]
-      : query_exec_request.fragments[0];
-
   {
     lock_guard<mutex> l(lock_);
     // Don't start executing the query if Cancel() was called concurrently with Exec().

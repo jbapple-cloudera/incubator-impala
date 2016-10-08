@@ -97,9 +97,13 @@ inline bool BitReader_8byte::GetValue(int num_bits, T* v) {
   if (bit_offset_ >= 64) {
     ++offset_;
     bit_offset_ -= 64;
-    // Read bits of v that crossed into new byte offset
-    *v |= BitUtil::TrailingBits(
-        buffer_[offset_], bit_offset_) << (num_bits - bit_offset_);
+    if (num_bits - bit_offset_ < size) {
+      // Read bits of v that crossed into new byte offset
+      *v |= BitUtil::TrailingBits(buffer_[offset_], bit_offset_)
+          << (num_bits - bit_offset_);
+    } else {
+      *v = 0;
+    }
   }
   DCHECK_LT(bit_offset_, 64);
   return true;

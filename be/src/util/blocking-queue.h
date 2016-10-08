@@ -27,6 +27,7 @@
 
 #include "common/atomic.h"
 #include "common/compiler-util.h"
+#include "util/aligned-new.h"
 #include "util/condition-variable.h"
 #include "util/stopwatch.h"
 #include "util/time.h"
@@ -43,7 +44,7 @@ namespace impala {
 /// will atomically swap the 'put_list_' with 'get_list_'. The swapping happens with both
 /// the 'get_lock_' and 'put_lock_' held.
 template <typename T>
-class BlockingQueue {
+class BlockingQueue : public CacheLineAligned {
  public:
   BlockingQueue(size_t max_elements)
     : shutdown_(false),
