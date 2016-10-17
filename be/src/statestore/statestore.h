@@ -18,26 +18,28 @@
 #ifndef STATESTORE_STATESTORE_H
 #define STATESTORE_STATESTORE_H
 
-#include <stdint.h>
+#include <cstdint>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
-#include <boost/unordered_map.hpp>
+
 #include <boost/scoped_ptr.hpp>
 #include <boost/thread/condition_variable.hpp>
+#include <boost/unordered_map.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 
-#include "gen-cpp/Types_types.h"
-#include "gen-cpp/StatestoreSubscriber.h"
 #include "gen-cpp/StatestoreService.h"
-#include "util/metrics.h"
-#include "util/collection-metrics.h"
+#include "gen-cpp/StatestoreSubscriber.h"
+#include "gen-cpp/Types_types.h"
 #include "rpc/thrift-client.h"
-#include "util/thread-pool.h"
-#include "util/webserver.h"
 #include "runtime/client-cache.h"
 #include "runtime/timestamp-value.h"
 #include "statestore/failure-detector.h"
+#include "util/aligned-new.h"
+#include "util/collection-metrics.h"
+#include "util/metrics.h"
+#include "util/thread-pool.h"
+#include "util/webserver.h"
 
 namespace impala {
 
@@ -79,7 +81,7 @@ class Status;
 /// processed. The statestore can use this information to send a delta of updates to a
 /// subscriber, rather than all items in the topic.  For non-delta updates, the statestore
 /// will send an update that includes all values in the topic.
-class Statestore {
+class Statestore : public CacheLineAligned {
  public:
   /// A SubscriberId uniquely identifies a single subscriber, and is
   /// provided by the subscriber at registration time.

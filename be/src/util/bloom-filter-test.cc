@@ -160,7 +160,8 @@ TEST(BloomFilter, FindInvalid) {
 
 // Test that MaxNdv() and MinLogSpace() are dual
 TEST(BloomFilter, MinSpaceMaxNdv) {
-  for (double fpp = 0.25; fpp >= 1.0 / (1ull << 63); fpp /= 2) {
+  for (int log2fpp = -2; log2fpp >= -63; --log2fpp) {
+    const double fpp = pow(2, log2fpp);
     for (int given_log_space = 8; given_log_space < 30; ++given_log_space) {
       const size_t derived_ndv = BloomFilter::MaxNdv(given_log_space, fpp);
       int derived_log_space = BloomFilter::MinLogSpace(derived_ndv, fpp);

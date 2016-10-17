@@ -726,7 +726,6 @@ void Coordinator::MtStartRemoteFInstances() {
   int num_fragment_instances = schedule_.GetNumFragmentInstances();
   DebugOptions debug_options;
   ProcessQueryOptions(schedule_.query_options(), &debug_options);
-  const TQueryExecRequest& request = schedule_.request();
 
   VLOG_QUERY << "starting " << num_fragment_instances << " fragment instances for query "
              << query_id_;
@@ -1485,7 +1484,6 @@ void Coordinator::MtInitExecSummary() {
 }
 
 void Coordinator::MtInitExecProfiles() {
-  const TQueryExecRequest& request = schedule_.request();
   vector<const TPlanFragment*> fragments;
   schedule_.GetTPlanFragments(&fragments);
   fragment_profiles_.resize(fragments.size());

@@ -164,7 +164,6 @@ class SlotDescriptor {
   int llvm_field_idx_;
 
   /// Cached codegen'd functions
-  mutable llvm::Function* is_null_fn_;
   mutable llvm::Function* set_not_null_fn_;
   mutable llvm::Function* set_null_fn_;
 

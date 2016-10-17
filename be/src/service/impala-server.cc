@@ -208,8 +208,6 @@ const char* ImpalaServer::SQLSTATE_GENERAL_ERROR = "HY000";
 const char* ImpalaServer::SQLSTATE_OPTIONAL_FEATURE_NOT_IMPLEMENTED = "HYC00";
 const int ImpalaServer::ASCII_PRECISION = 16; // print 16 digits for double/float
 
-const int MAX_NM_MISSED_HEARTBEATS = 5;
-
 // Work item for ImpalaServer::cancellation_thread_pool_.
 class CancellationWork {
  public:
@@ -222,7 +220,7 @@ class CancellationWork {
 
   const TUniqueId& query_id() const { return query_id_; }
   const Status& cause() const { return cause_; }
-  const bool unregister() const { return unregister_; }
+  bool unregister() const { return unregister_; }
 
   bool operator<(const CancellationWork& other) const {
     return query_id_ < other.query_id_;
@@ -635,14 +633,14 @@ Status ImpalaServer::GetExecSummary(const TUniqueId& query_id, TExecSummary* res
   return Status::OK();
 }
 
-void ImpalaServer::LogFileFlushThread() {
+[[noreturn]] void ImpalaServer::LogFileFlushThread() {
   while (true) {
     sleep(5);
     profile_logger_->Flush();
   }
 }
 
-void ImpalaServer::AuditEventLoggerFlushThread() {
+[[noreturn]] void ImpalaServer::AuditEventLoggerFlushThread() {
   while (true) {
     sleep(5);
     Status status = audit_event_logger_->Flush();
@@ -656,7 +654,7 @@ void ImpalaServer::AuditEventLoggerFlushThread() {
   }
 }
 
-void ImpalaServer::LineageLoggerFlushThread() {
+[[noreturn]] void ImpalaServer::LineageLoggerFlushThread() {
   while (true) {
     sleep(5);
     Status status = lineage_logger_->Flush();
@@ -1676,7 +1674,7 @@ void ImpalaServer::RegisterSessionTimeout(int32_t session_timeout) {
   session_timeout_cv_.notify_one();
 }
 
-void ImpalaServer::ExpireSessions() {
+[[noreturn]] void ImpalaServer::ExpireSessions() {
   while (true) {
     {
       unique_lock<mutex> timeout_lock(session_timeout_lock_);
@@ -1727,7 +1725,7 @@ void ImpalaServer::ExpireSessions() {
   }
 }
 
-void ImpalaServer::ExpireQueries() {
+[[noreturn]] void ImpalaServer::ExpireQueries() {
   while (true) {
     // The following block accomplishes three things:
     //

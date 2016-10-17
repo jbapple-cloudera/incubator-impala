@@ -48,8 +48,6 @@ DECLARE_string(minidump_path);
 DECLARE_int32(max_minidumps);
 DECLARE_int32(minidump_size_limit_hint_kb);
 
-#define MINIDUMP_LOG_BUF_SIZE 256
-
 namespace impala {
 
 /// Breakpad ExceptionHandler. It registers its own signal handlers to write minidump

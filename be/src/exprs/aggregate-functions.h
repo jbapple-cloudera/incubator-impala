@@ -154,7 +154,7 @@ class AggregateFunctions {
   static void ReservoirSampleMerge(FunctionContext*, const StringVal& src,
       StringVal* dst);
   template <typename T>
-  static const StringVal ReservoirSampleSerialize(FunctionContext*,
+  static StringVal ReservoirSampleSerialize(FunctionContext*,
       const StringVal& src);
 
   /// Returns 20,000 unsorted samples as a list of comma-separated values.
@@ -178,8 +178,8 @@ class AggregateFunctions {
   /// 1) Hyperloglog: The analysis of a near-optimal cardinality estimation
   /// algorithm (2007)
   /// 2) HyperLogLog in Practice (paper from google with some improvements)
-  static const int HLL_PRECISION;
-  static const int HLL_LEN;
+  static constexpr int HLL_PRECISION = 10;
+  static constexpr int HLL_LEN = 1 << 10;
   static void HllInit(FunctionContext*, StringVal* slot);
   template <typename T>
   static void HllUpdate(FunctionContext*, const T& src, StringVal* dst);

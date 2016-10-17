@@ -19,16 +19,16 @@
 #ifndef IMPALA_EXEC_EXEC_NODE_H
 #define IMPALA_EXEC_EXEC_NODE_H
 
-#include <new>
-#include <vector>
 #include <sstream>
+#include <vector>
 
 #include "common/status.h"
 #include "exprs/expr-context.h"
-#include "runtime/descriptors.h"  // for RowDescriptor
-#include "util/runtime-profile.h"
-#include "util/blocking-queue.h"
 #include "gen-cpp/PlanNodes_types.h"
+#include "runtime/descriptors.h" // for RowDescriptor
+#include "util/aligned-new.h"
+#include "util/blocking-queue.h"
+#include "util/runtime-profile.h"
 
 namespace impala {
 
@@ -222,25 +222,6 @@ class ExecNode {
     /// after this is called.
     /// Returns the number of io buffers that were released (for debug tracking)
     int Cleanup();
-
-    // RowBatchQueue allocation must be at 64-byte boundary because of the SpinLock, and
-    // ::operator new does not guarantee 64-byte alignment.
-    static void* operator new(size_t count) {
-      void* result = nullptr;
-      if (!posix_memalign(&result, 64, count)) {
-        throw std::bad_alloc();
-      }
-      return result;
-    }
-    static void* operator new[](std::size_t count) {
-      void* result = nullptr;
-      if (!posix_memalign(&result, 64, count)) {
-        throw std::bad_alloc();
-      }
-      return result;
-    }
-    static void operator delete(void* ptr) { free(ptr); }
-    static void operator delete[](void* ptr) { free(ptr); }
 
    private:
     /// Lock protecting cleanup_queue_
