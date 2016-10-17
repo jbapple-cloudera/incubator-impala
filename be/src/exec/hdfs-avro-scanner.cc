@@ -638,6 +638,7 @@ bool HdfsAvroScanner::MaterializeTuple(const AvroSchemaElement& record_schema,
         success = MaterializeTuple(element, pool, data, data_end, tuple);
         break;
       default:
+        success = false;
         DCHECK(false) << "Unsupported SchemaElement: " << type;
     }
     if (UNLIKELY(!success)) {

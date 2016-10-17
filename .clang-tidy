@@ -56,7 +56,8 @@ Checks: "-*,clang*,\
 -clang-diagnostic-cast-align,\
 -clang-analyzer-core.uninitialized.Assign,\
 -clang-analyzer-unix.MallocSizeof,\
--clang-analyzer-unix.Malloc"
+-clang-analyzer-unix.Malloc,\
+-clang-diagnostic-disabled-macro-expansion"
 
 # OK, but including for now
 # clang-diagnostic-sign-conversion

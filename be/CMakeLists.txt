@@ -87,8 +87,7 @@ SET(CXX_FLAGS_RELEASE "${CXX_GCC_FLAGS} -O3 -DNDEBUG -gdwarf-2")
 SET(CXX_FLAGS_ADDRESS_SANITIZER
   "${CXX_CLANG_FLAGS} -O1 -g -fsanitize=address -fno-omit-frame-pointer -DADDRESS_SANITIZER")
 
-SET(CXX_FLAGS_TIDY
-  "${CXX_CLANG_FLAGS} -O0 -Wall -W -Weverything")
+SET(CXX_FLAGS_TIDY "${CXX_CLANG_FLAGS} -O1 -DNDEBUG -Wall -W -Weverything")
 
 # Set compile flags based on the build type.
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
