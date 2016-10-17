@@ -1,6 +1,7 @@
 # PATH=/opt/Impala-Toolchain/llvm-3.8.0-p1/bin/:$PATH /opt/Impala-Toolchain/llvm-3.8.0-p1/share/clang/run-clang-tidy.py -header-filter='be/src'
 # -header-filter=be/src
 #for DIR in $(ls -d be/src/*/); do if ! (echo "${DIR}" | grep -q -E "thirdparty|gutil"); then PATH=/opt/Impala-Toolchain/llvm-3.8.0-p1/bin/:$PATH echo /opt/Impala-Toolchain/llvm-3.8.0-p1/share/clang/run-clang-tidy.py -header-filter='be/src' -j32 -fix -format "${DIR}"; fi; done
+# (time -p ((for foo in benchmarks bufferpool catalog codegen common exec experiments exprs resourcebroker rpc runtime scheduling service statestore testutil transport udf udf_samples util; do echo "TIDYING $foo"; PATH=/opt/Impala-Toolchain/llvm-3.8.0-p1/bin/:$PATH /opt/Impala-Toolchain/llvm-3.8.0-p1/share/clang/run-clang-tidy.py -j32 -header-filter 'be/src/(benchmarks|bufferpool|catalog|codegen|common|exec|experiments|exprs|resourcebroker|rpc|runtime|scheduling|service|statestore|testutil|transport|udf|udf_samples|util)' be/src/${foo}; done) 2>&1)) | less -N
 ---
 #Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*'
 #Checks:          '-*,misc-static-assert,misc-assert-side-effect,clang-diagnostic-*,-clang-diagnostic-unused-local-typedef,-clang-diagnostic-unused-function,-clang-diagnostic-unused-const-variable'

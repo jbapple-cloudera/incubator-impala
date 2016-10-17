@@ -65,7 +65,7 @@ SET(CXX_COVERAGE_FLAGS "-fprofile-arcs -ftest-coverage")
 #   -Wno-mismatched-tags: ignore harmless class/struct mismatch for forward declarations.
 #        Disabling to be consistent with gcc, which doesn't have this warning.
 SET(CXX_CLANG_FLAGS "-Qunused-arguments -fcolor-diagnostics -Wno-unused-local-typedef")
-SET(CXX_CLANG_FLAGS "${CXX_CLANG_FLAGS} -Wno-mismatched-tags -Wall -W -Weverything")
+SET(CXX_CLANG_FLAGS "${CXX_CLANG_FLAGS} -Wno-mismatched-tags")
 # For any gcc builds:
 #   -g: Enable symbols for profiler tools
 #   -Wno-unused-local-typedefs: Do not warn for local typedefs that are unused.
@@ -87,6 +87,9 @@ SET(CXX_FLAGS_RELEASE "${CXX_GCC_FLAGS} -O3 -DNDEBUG -gdwarf-2")
 SET(CXX_FLAGS_ADDRESS_SANITIZER
   "${CXX_CLANG_FLAGS} -O1 -g -fsanitize=address -fno-omit-frame-pointer -DADDRESS_SANITIZER")
 
+SET(CXX_FLAGS_TIDY
+  "${CXX_CLANG_FLAGS} -O0 -Wall -W -Weverything")
+
 # Set compile flags based on the build type.
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")
   SET(CMAKE_CXX_FLAGS ${CXX_FLAGS_DEBUG})
@@ -94,6 +97,8 @@ elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "RELEASE")
   SET(CMAKE_CXX_FLAGS ${CXX_FLAGS_RELEASE})
 elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "ADDRESS_SANITIZER")
   SET(CMAKE_CXX_FLAGS "${CXX_FLAGS_ADDRESS_SANITIZER}")
+elseif ("${CMAKE_BUILD_TYPE}" STREQUAL "TIDY")
+  SET(CMAKE_CXX_FLAGS "${CXX_FLAGS_TIDY}")
 else()
   message(FATAL_ERROR "Unknown build type: ${CMAKE_BUILD_TYPE}")
 endif()
@@ -115,7 +120,8 @@ find_program(CCACHE ccache)
 if (CCACHE AND NOT DEFINED ENV{DISABLE_CCACHE})
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-  if ("${CMAKE_BUILD_TYPE}" STREQUAL "ADDRESS_SANITIZER")
+  if (("${CMAKE_BUILD_TYPE}" STREQUAL "ADDRESS_SANITIZER")
+      OR ("${CMAKE_BUILD_TYPE}" STREQUAL "TIDY"))
     # Need to set CCACHE_CPP so that ccache calls clang with the original source file for
     # both preprocessing and compilation. Otherwise, ccache will use clang to preprocess
     # the file and then call clang with the preprocessed output if not cached. However,
