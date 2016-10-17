@@ -36,7 +36,7 @@ class BufferBuilder {
       capacity_(dst_len), size_(0) {
   }
 
-  inline void Append(const void* buffer, int len) {
+  inline void Append(const void* buffer, int len) __attribute__((nonnull)) {
     DCHECK_LE(size_ + len, capacity_);
     memcpy(buffer_ + size_, buffer, len);
     size_ += len;

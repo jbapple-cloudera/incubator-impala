@@ -4,22 +4,68 @@
 ---
 #Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*'
 #Checks:          '-*,misc-static-assert,misc-assert-side-effect,clang-diagnostic-*,-clang-diagnostic-unused-local-typedef,-clang-diagnostic-unused-function,-clang-diagnostic-unused-const-variable'
-Checks: "-*,\
-misc-static-assert,\
-misc-assert-side-effect,\
-clang-diagnostic-*,\
--clang-diagnostic-unused-local-typedef,\
--clang-diagnostic-unused-function,\
--clang-diagnostic-unused-const-variable,\
-clang-analyzer-*,\
--clang-analyzer-core.CallAndMessage,\
--clang-analyzer-alpha*,\
--clang-analyzer-optin.performance.Padding"
-HeaderFilterRegex: 'be/src/'
+HeaderFilterRegex: 'be/src'
 AnalyzeTemporaryDtors: true
 CheckOptions:
   - key:             misc-assert-side-effect.AssertMacros
     value:           assert,DCHECK,DCHECK_EQ,DCHECK_GE,DCHECK_GT,DCHECK_LE,DCHECK_LT,DCHECK_NE,DCHECK_NO_OVERLAP,DCHECK_NOTNULL
+
+Checks: "-*,clang-diagnostic-reorder"
+
+# Checks: "-*,clang*,\
+# -clang-diagnostic-c++98*,\
+# -clang-diagnostic-missing-prototypes,\
+# -clang-diagnostic-padded,\
+# -clang-diagnostic-sign-conversion,\
+# -clang-diagnostic-shorten-64-to-32,\
+# -clang-diagnostic-sign-compare,\
+# -clang-diagnostic-implicit-fallthrough,\
+# -clang-diagnostic-conversion,\
+# -clang-diagnostic-shadow,\
+# -clang-diagnostic-switch-enum,\
+# -clang-diagnostic-unused-parameter,\
+# -clang-diagnostic-old-style-cast,\
+# -clang-diagnostic-float-equal,\
+# -clang-diagnostic-gnu-anonymous-struct,\
+# -clang-diagnostic-nested-anon-types,\
+# -clang-analyzer-alpha*,\
+# -clang-diagnostic-vla-extension,\
+# -clang-diagnostic-global-constructors,\
+# -clang-diagnostic-exit-time-destructors,\
+# -clang-diagnostic-missing-variable-declarations,\
+# -clang-diagnostic-float-conversion,\
+# -clang-diagnostic-documentation-unknown-command,\
+# -clang-diagnostic-weak-vtables,\
+# -clang-diagnostic-undefined-reinterpret-cast,\
+# -clang-diagnostic-covered-switch-default,\
+# -clang-diagnostic-double-promotion,\
+# -clang-analyzer-core.CallAndMessage,\
+# -clang-diagnostic-header-hygiene,\
+# -clang-diagnostic-mismatched-tags,\
+# -clang-diagnostic-used-but-marked-unused,\
+# -clang-diagnostic-unused-local-typedef,\
+# -clang-diagnostic-documentation-html,\
+# -clang-diagnostic-unreachable-code-return,\
+# -clang-analyzer-core.uninitialized.Branch,\
+# -clang-analyzer-core.NullDereference,\
+# -clang-analyzer-core.NonNullParamChecker"
+
+# OK, but including for now
+# clang-diagnostic-sign-conversion
+# clang-diagnostic-shorten-64-to-32
+# clang-diagnostic-sign-compare
+# clang-diagnostic-implicit-fallthrough
+# clang-diagnostic-conversion
+# clang-diagnostic-unused-parameter
+# clang-diagnostic-old-style-cast
+# clang-diagnostic-float-conversion
+# clang-analyzer-alpha.unix.PthreadLock
+# clang-analyzer-core.CallAndMessage
+# clang-diagnostic-unreachable-code-return
+# clang-analyzer-core.uninitialized.Branch
+# clang-analyzer-core.NullDereference
+# clang-analyzer-core.NonNullParamChecker
+
   # - key:             google-readability-braces-around-statements.ShortStatementLines
   #   value:           '1'
   # - key:             google-readability-function-size.StatementThreshold

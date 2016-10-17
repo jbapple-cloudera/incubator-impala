@@ -243,16 +243,11 @@ class Coordinator {
   /// PrepareCoordFragment() and StartRemoteFragments()/MtStartRemoteFInstances().
   std::vector<FragmentInstanceState*> fragment_instance_states_;
 
-  /// True if the query needs a post-execution step to tidy up
-  bool needs_finalization_;
-
   /// Only valid if needs_finalization is true
   TFinalizeParams finalize_params_;
 
   /// ensures single-threaded execution of Wait(); must not hold lock_ when acquiring this
   boost::mutex wait_lock_;
-
-  bool has_called_wait_;  // if true, Wait() was called; protected by wait_lock_
 
   /// Keeps track of number of completed ranges and total scan ranges.
   ProgressUpdater progress_;
@@ -268,12 +263,6 @@ class Coordinator {
   /// Overall status of the entire query; set to the first reported fragment error
   /// status or to CANCELLED, if Cancel() is called.
   Status query_status_;
-
-  /// If true, the query is done returning all results.  It is possible that the
-  /// coordinator still needs to wait for cleanup on remote fragments (e.g. queries
-  /// with limit)
-  /// Once this is set to true, errors from remote fragments are ignored.
-  bool returned_all_results_;
 
   /// execution state of coordinator fragment
   boost::scoped_ptr<PlanFragmentExecutor> executor_;
@@ -293,9 +282,6 @@ class Coordinator {
   // Sets the TDescriptorTable(s) for the current fragment.
   void SetExecPlanDescriptorTable(const TPlanFragment& fragment,
       TExecPlanFragmentParams* rpc_params);
-
-  /// True if execution has completed, false otherwise.
-  bool execution_completed_;
 
   /// Number of remote fragments that have completed
   int num_remote_fragements_complete_;
@@ -409,10 +395,6 @@ class Coordinator {
   typedef boost::unordered_map<int32_t, FilterState> FilterRoutingTable;
   FilterRoutingTable filter_routing_table_;
 
-  /// Set to true when all calls to UpdateFilterRoutingTable() have finished, and it's
-  /// safe to concurrently read from filter_routing_table_.
-  bool filter_routing_table_complete_;
-
   /// Total number of filter updates received (always 0 if filter mode is not
   /// GLOBAL). Excludes repeated broadcast filter updates.
   RuntimeProfile::Counter* filter_updates_received_;
@@ -424,11 +406,29 @@ class Coordinator {
   /// query_mem_tracker_.
   std::unique_ptr<MemTracker> filter_mem_tracker_;
 
-  /// True if and only if TearDown() has been called.
-  bool torn_down_;
-
   /// Returns a pretty-printed table of the current filter state.
   std::string FilterDebugString();
+
+  /// True if the query needs a post-execution step to tidy up
+  bool needs_finalization_;
+
+  bool has_called_wait_;  // if true, Wait() was called; protected by wait_lock_
+
+  /// If true, the query is done returning all results.  It is possible that the
+  /// coordinator still needs to wait for cleanup on remote fragments (e.g. queries
+  /// with limit)
+  /// Once this is set to true, errors from remote fragments are ignored.
+  bool returned_all_results_;
+
+  /// True if execution has completed, false otherwise.
+  bool execution_completed_;
+
+  /// Set to true when all calls to UpdateFilterRoutingTable() have finished, and it's
+  /// safe to concurrently read from filter_routing_table_.
+  bool filter_routing_table_complete_;
+
+  /// True if and only if TearDown() has been called.
+  bool torn_down_;
 
   /// Sets 'filter_routing_table_complete_' and prints the table to the profile and log.
   void MarkFilterRoutingTableComplete();

@@ -28,7 +28,10 @@
 
 #include "common/names.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wheader-hygiene"
 using namespace impala_udf;
+#pragma clang diagnostic pop
 
 namespace impala {
 

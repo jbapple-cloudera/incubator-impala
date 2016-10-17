@@ -37,7 +37,7 @@ namespace impala {
 /// servers and clients.
 class AuthManager {
  public:
-  static AuthManager* GetInstance() { return AuthManager::auth_manager_; };
+  static AuthManager* GetInstance() { return AuthManager::auth_manager_; }
 
   /// Set up internal and external AuthProvider classes.  This does a bunch of flag
   /// checking and calls each AuthProvider->Start().

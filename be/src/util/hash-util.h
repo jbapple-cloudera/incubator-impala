@@ -103,7 +103,7 @@ class HashUtil {
     const uint64_t* p = reinterpret_cast<const uint64_t*>(v);
     hash = SSE4_crc32_u64(hash, *p);
     ++p;
-    hash = SSE4_crc32_u32(hash, *reinterpret_cast<const uint32_t *>(p));
+    hash = SSE4_crc32_u32(hash, *reinterpret_cast<const uint32_t *>(p)); // NOLINT
     hash = (hash << 16) | (hash >> 16);
     return hash;
   }

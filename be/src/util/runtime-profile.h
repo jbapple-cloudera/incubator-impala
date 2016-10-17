@@ -332,18 +332,11 @@ class RuntimeProfile {
   /// object, but occasionally allocated in the constructor.
   ObjectPool* pool_;
 
-  /// True if we have to delete the pool_ on destruction.
-  bool own_pool_;
-
   /// Name for this runtime profile.
   std::string name_;
 
   /// user-supplied, uninterpreted metadata.
   int64_t metadata_;
-
-  /// True if this profile is an average derived from other profiles.
-  /// All counters in this profile must be of unit AveragedCounter.
-  bool is_averaged_profile_;
 
   /// Map from counter names to counters.  The profile owns the memory for the
   /// counters.
@@ -410,6 +403,13 @@ class RuntimeProfile {
   /// Time spent in this node (not including the children). Computed in
   /// ComputeTimeInProfile()
   int64_t local_time_ns_;
+
+  /// True if we have to delete the pool_ on destruction.
+  bool own_pool_;
+
+  /// True if this profile is an average derived from other profiles.
+  /// All counters in this profile must be of unit AveragedCounter.
+  bool is_averaged_profile_;
 
   /// Update a subtree of profiles from nodes, rooted at *idx.
   /// On return, *idx points to the node immediately following this subtree.

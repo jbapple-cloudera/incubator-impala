@@ -251,7 +251,6 @@ class Statestore {
   /// Protects access to exit_flag_, but is used mostly to ensure visibility of updates
   /// between threads..
   boost::mutex exit_flag_lock_;
-  bool exit_flag_;
 
   /// Controls access to topics_. Cannot take subscribers_lock_ after acquiring this lock.
   boost::mutex topic_lock_;
@@ -308,7 +307,7 @@ class Statestore {
 
     /// Returns the last version of the topic which this subscriber has successfully
     /// processed. Will never decrease.
-    const TopicEntry::Version LastTopicVersionProcessed(const TopicId& topic_id) const;
+    TopicEntry::Version LastTopicVersionProcessed(const TopicId& topic_id) const;
 
     /// Sets the subscriber's last processed version of the topic to the given value.  This
     /// should only be set when once a subscriber has succesfully processed the given
@@ -432,6 +431,8 @@ class Statestore {
   /// Same as above, but for SendHeartbeat() RPCs.
   StatsMetric<double>* heartbeat_duration_metric_;
 
+  bool exit_flag_;
+
   /// Utility method to add an update to the given thread pool, and to fail if the thread
   /// pool is already at capacity.
   Status OfferUpdate(const ScheduledSubscriberUpdate& update,
@@ -484,8 +485,8 @@ class Statestore {
   /// TODO: Update the min subscriber version only when a topic is updated, rather than
   /// each time a subscriber is updated. One way to do this would be to keep a priority
   /// queue in Topic of each subscriber's last processed version of the topic.
-  const TopicEntry::Version GetMinSubscriberTopicVersion(const TopicId& topic_id,
-      SubscriberId* subscriber_id = NULL);
+  TopicEntry::Version GetMinSubscriberTopicVersion(
+      const TopicId& topic_id, SubscriberId* subscriber_id = NULL);
 
   /// True if the shutdown flag has been set true, false otherwise.
   bool ShouldExit();

@@ -251,7 +251,7 @@ class KuduTestHelper {
 
  private:
   string table_name_;
-  KuduSchema test_schema_;;
+  KuduSchema test_schema_;
   ObjectPool obj_pool_;
   std::tr1::shared_ptr<KuduClient> client_;
   std::tr1::shared_ptr<KuduTable> client_table_;

@@ -99,7 +99,10 @@
 #include "udf/udf.h"
 #include "udf/udf-internal.h" // for CollectionVal
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wheader-hygiene"
 using namespace impala_udf;
+#pragma clang diagnostic pop
 
 namespace llvm {
   class BasicBlock;
