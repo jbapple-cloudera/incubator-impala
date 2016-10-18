@@ -1,16 +1,4 @@
-# PATH=/opt/Impala-Toolchain/llvm-3.8.0-p1/bin/:$PATH /opt/Impala-Toolchain/llvm-3.8.0-p1/share/clang/run-clang-tidy.py -header-filter='be/src'
-# -header-filter=be/src
-#for DIR in $(ls -d be/src/*/); do if ! (echo "${DIR}" | grep -q -E "thirdparty|gutil"); then PATH=/opt/Impala-Toolchain/llvm-3.8.0-p1/bin/:$PATH echo /opt/Impala-Toolchain/llvm-3.8.0-p1/share/clang/run-clang-tidy.py -header-filter='be/src' -j32 -fix -format "${DIR}"; fi; done
-# (time -p ((for foo in benchmarks bufferpool catalog codegen common exec experiments exprs resourcebroker rpc runtime scheduling service statestore testutil transport udf udf_samples util; do echo "TIDYING $foo"; PATH=/opt/Impala-Toolchain/llvm-3.8.0-p1/bin/:$PATH /opt/Impala-Toolchain/llvm-3.8.0-p1/share/clang/run-clang-tidy.py -j32 -header-filter 'be/src/(benchmarks|bufferpool|catalog|codegen|common|exec|experiments|exprs|resourcebroker|rpc|runtime|scheduling|service|statestore|testutil|transport|udf|udf_samples|util)' be/src/${foo}; done) 2>&1)) | less -N
 ---
-#Checks:          '-*,clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*'
-#Checks:          '-*,misc-static-assert,misc-assert-side-effect,clang-diagnostic-*,-clang-diagnostic-unused-local-typedef,-clang-diagnostic-unused-function,-clang-diagnostic-unused-const-variable'
-HeaderFilterRegex: 'be/src'
-AnalyzeTemporaryDtors: true
-CheckOptions:
-  - key:             misc-assert-side-effect.AssertMacros
-    value:           assert,DCHECK,DCHECK_EQ,DCHECK_GE,DCHECK_GT,DCHECK_LE,DCHECK_LT,DCHECK_NE,DCHECK_NO_OVERLAP,DCHECK_NOTNULL
-
 Checks: "-*,clang*,\
 -clang-diagnostic-c++98*,\
 -clang-diagnostic-missing-prototypes,\
@@ -61,40 +49,26 @@ Checks: "-*,clang*,\
 -clang-diagnostic-return-type-c-linkage,\
 -clang-diagnostic-unreachable-code,\
 -clang-diagnostic-class-varargs"
-
-# OK, but including for now
-# clang-diagnostic-sign-conversion
-# clang-diagnostic-shorten-64-to-32
-# clang-diagnostic-sign-compare
-# clang-diagnostic-implicit-fallthrough
-# clang-diagnostic-conversion
-# clang-diagnostic-unused-parameter
-# clang-diagnostic-old-style-cast
-# clang-diagnostic-float-conversion
-# clang-analyzer-alpha.unix.PthreadLock
-# clang-analyzer-core.CallAndMessage
-# clang-diagnostic-unreachable-code-return
-# clang-analyzer-core.uninitialized.Branch
-# clang-analyzer-core.NullDereference
-# clang-analyzer-core.NonNullParamChecker
-
-  # - key:             google-readability-braces-around-statements.ShortStatementLines
-  #   value:           '1'
-  # - key:             google-readability-function-size.StatementThreshold
-  #   value:           '800'
-  # - key:             google-readability-namespace-comments.ShortNamespaceLines
-  #   value:           '10'
-  # - key:             google-readability-namespace-comments.SpacesBeforeComments
-  #   value:           '2'
-  # - key:             modernize-loop-convert.MaxCopySize
-  #   value:           '16'
-  # - key:             modernize-loop-convert.MinConfidence
-  #   value:           reasonable
-  # - key:             modernize-loop-convert.NamingStyle
-  #   value:           CamelCase
-  # - key:             modernize-pass-by-value.IncludeStyle
-  #   value:           llvm
-  # - key:             modernize-replace-auto-ptr.IncludeStyle
-  #   value:           llvm
-  # - key:             modernize-use-nullptr.NullMacros
-  #   value:           'NULL'
+# Ignore warnings in gutil
+HeaderFilterRegex: "be/src/\
+(benchmarks\
+|bufferpool\
+|catalog\
+|codegen\
+|common\
+|exec\
+|experiments\
+|exprs\
+|resourcebroker\
+|rpc\
+|runtime\
+|scheduling\
+|service\
+|statestore\
+|testutil\
+|thirdparty\
+|transport\
+|udf\
+|udf_samples\
+|util)"
+AnalyzeTemporaryDtors: true
