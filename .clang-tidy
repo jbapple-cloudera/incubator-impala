@@ -57,7 +57,10 @@ Checks: "-*,clang*,\
 -clang-analyzer-core.uninitialized.Assign,\
 -clang-analyzer-unix.MallocSizeof,\
 -clang-analyzer-unix.Malloc,\
--clang-diagnostic-disabled-macro-expansion"
+-clang-diagnostic-disabled-macro-expansion,\
+-clang-diagnostic-return-type-c-linkage,\
+-clang-diagnostic-unreachable-code,\
+-clang-diagnostic-class-varargs"
 
 # OK, but including for now
 # clang-diagnostic-sign-conversion

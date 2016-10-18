@@ -51,12 +51,8 @@ BufferedTupleStream::BufferedTupleStream(RuntimeState* state,
     const RowDescriptor& row_desc, BufferedBlockMgr* block_mgr,
     BufferedBlockMgr::Client* client, bool use_initial_small_buffers, bool read_write,
     const set<SlotId>& ext_varlen_slots)
-  : use_small_buffers_(use_initial_small_buffers),
-    delete_on_read_(false),
-    read_write_(read_write),
-    state_(state),
+  : state_(state),
     desc_(row_desc),
-    has_nullable_tuple_(row_desc.IsAnyTupleNullable()),
     block_mgr_(block_mgr),
     block_mgr_client_(client),
     total_byte_size_(0),
@@ -71,12 +67,16 @@ BufferedTupleStream::BufferedTupleStream(RuntimeState* state,
     write_block_(NULL),
     num_pinned_(0),
     num_small_blocks_(0),
-    closed_(false),
     num_rows_(0),
-    pinned_(true),
     pin_timer_(NULL),
     unpin_timer_(NULL),
-    get_new_block_timer_(NULL) {
+    get_new_block_timer_(NULL),
+    use_small_buffers_(use_initial_small_buffers),
+    delete_on_read_(false),
+    read_write_(read_write),
+    has_nullable_tuple_(row_desc.IsAnyTupleNullable()),
+    closed_(false),
+    pinned_(true) {
   read_block_null_indicators_size_ = -1;
   write_block_null_indicators_size_ = -1;
   max_null_indicators_size_ = -1;
@@ -283,8 +283,8 @@ Status BufferedTupleStream::NewWriteBlock(int64_t block_len, int64_t null_indica
 }
 
 Status BufferedTupleStream::NewWriteBlockForRow(int64_t row_size, bool* got_block) {
-  int64_t block_len;
-  int64_t null_indicators_size;
+  int64_t block_len = 0;
+  int64_t null_indicators_size = 0;
   if (use_small_buffers_) {
     *got_block = false;
     if (blocks_.size() < NUM_SMALL_BLOCKS) {

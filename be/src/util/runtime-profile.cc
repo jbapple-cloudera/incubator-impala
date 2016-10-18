@@ -54,14 +54,14 @@ const string RuntimeProfile::INACTIVE_TIME_COUNTER_NAME = "InactiveTotalTime";
 RuntimeProfile::RuntimeProfile(ObjectPool* pool, const string& name,
     bool is_averaged_profile)
   : pool_(pool),
-    own_pool_(false),
     name_(name),
     metadata_(-1),
-    is_averaged_profile_(is_averaged_profile),
     counter_total_time_(TUnit::TIME_NS),
     inactive_timer_(TUnit::TIME_NS),
     local_time_percent_(0),
-    local_time_ns_(0) {
+    local_time_ns_(0),
+    own_pool_(false),
+    is_averaged_profile_(is_averaged_profile) {
   Counter* total_time_counter;
   Counter* inactive_timer;
   if (!is_averaged_profile) {

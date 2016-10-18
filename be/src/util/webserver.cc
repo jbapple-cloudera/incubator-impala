@@ -420,7 +420,10 @@ int Webserver::BeginRequestCallback(struct sq_connection* connection,
   const string& str = output.str();
 
   const string& headers = BuildHeaderString(response, content_type);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wformat-nonliteral"
   sq_printf(connection, headers.c_str(), (int)str.length());
+#pragma clang diagnostic pop
 
   // Make sure to use sq_write for printing the body; sq_printf truncates at 8kb
   sq_write(connection, str.c_str(), str.length());

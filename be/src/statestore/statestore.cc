@@ -212,8 +212,7 @@ void Statestore::Subscriber::SetLastTopicVersionProcessed(const TopicId& topic_i
 }
 
 Statestore::Statestore(MetricGroup* metrics)
-  : exit_flag_(false),
-    subscriber_topic_update_threadpool_("statestore-update",
+  : subscriber_topic_update_threadpool_("statestore-update",
         "subscriber-update-worker",
         FLAGS_statestore_num_update_threads,
         STATESTORE_MAX_SUBSCRIBERS,
@@ -232,7 +231,8 @@ Statestore::Statestore(MetricGroup* metrics)
     thrift_iface_(new StatestoreThriftIf(this)),
     failure_detector_(new MissedHeartbeatFailureDetector(
         FLAGS_statestore_max_missed_heartbeats,
-        FLAGS_statestore_max_missed_heartbeats / 2)) {
+        FLAGS_statestore_max_missed_heartbeats / 2)),
+    exit_flag_(false) {
 
   DCHECK(metrics != NULL);
   num_subscribers_metric_ =
