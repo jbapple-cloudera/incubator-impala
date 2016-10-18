@@ -196,7 +196,7 @@ class Status {
   /// Returns the error message associated with a non-successful status.
   const ErrorMsg& msg() const {
     DCHECK(msg_ != NULL);
-    return *msg_; // NOLINT
+    return *msg_; // NOLINT: with DCHECKS off, this might deref a nullptr
   }
 
   /// Add a detail string. Calling this method is only defined on a non-OK message

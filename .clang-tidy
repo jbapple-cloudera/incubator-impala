@@ -66,28 +66,28 @@ Checks: "-*,clang*,\
 -clang-diagnostic-vla-extension,\
 -clang-diagnostic-weak-vtables"
 
-
 # Ignore warnings in gutil
 
-# HeaderFilterRegex: "be/src/\
-# (benchmarks\
-# |bufferpool\
-# |catalog\
-# |codegen\
-# |common\
-# |exec\
-# |experiments\
-# |exprs\
-# |resourcebroker\
-# |rpc\
-# |runtime\
-# |scheduling\
-# |service\
-# |statestore\
-# |testutil\
-# |thirdparty\
-# |transport\
-# |udf\
-# |udf_samples\
-# |util)"
+HeaderFilterRegex: "be/src/\
+(benchmarks\
+|bufferpool\
+|catalog\
+|codegen\
+|common\
+|exec\
+|experiments\
+|exprs\
+|resourcebroker\
+|rpc\
+|runtime\
+|scheduling\
+|service\
+|statestore\
+|testutil\
+|thirdparty\
+|transport\
+|udf\
+|udf_samples\
+|util)"
+
 AnalyzeTemporaryDtors: true

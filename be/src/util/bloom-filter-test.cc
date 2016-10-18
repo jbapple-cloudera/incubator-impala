@@ -206,7 +206,7 @@ TEST(BloomFilter, MinSpaceEdgeCase) {
 // Check that MinLogSpace() and FalsePositiveProb() are dual
 TEST(BloomFilter, MinSpaceForFpp) {
   for (size_t ndv = 10000; ndv < 100 * 1000 * 1000; ndv *= 1.01) {
-    for (double fpp = 0.1; fpp > pow(2, -20); fpp *= 0.99) { // NOLINT
+    for (double fpp = 0.1; fpp > pow(2, -20); fpp *= 0.99) { // NOLINT: loop on double
       // When contructing a Bloom filter, we can request a particular fpp by calling
       // MinLogSpace().
       const int min_log_space = BloomFilter::MinLogSpace(ndv, fpp);
