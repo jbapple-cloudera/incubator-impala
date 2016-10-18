@@ -24,7 +24,7 @@
 #include "runtime/mem-tracker.h"
 #include "runtime/string-value.h"
 
-using namespace strings;
+using strings::Substitute;
 
 namespace impala {
 

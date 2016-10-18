@@ -28,7 +28,10 @@
 #include "transport/TSasl.h"
 #include "common/status.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wheader-hygiene"
 using namespace ::apache::thrift::transport;
+#pragma clang diagnostic pop
 
 namespace impala {
 

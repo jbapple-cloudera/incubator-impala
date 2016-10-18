@@ -43,8 +43,6 @@
 
 namespace impala {
 
-using namespace impala;
-
 class Status;
 
 /// The Statestore is a soft-state key-value store that maintains a set of Topics, which

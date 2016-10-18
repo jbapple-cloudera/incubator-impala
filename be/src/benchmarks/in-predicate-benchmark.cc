@@ -161,7 +161,11 @@
 #include <gutil/strings/substitute.h>
 
 #include "exprs/in-predicate.h"
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wheader-hygiene"
 #include "exprs/in-predicate-ir.cc"
+#pragma clang diagnostic pop
 
 #include "udf/udf-test-harness.h"
 #include "util/benchmark.h"
