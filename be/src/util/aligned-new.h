@@ -38,7 +38,7 @@ struct AlignedNew {
  private:
   static void* Allocate(std::size_t count) {
     void* result = nullptr;
-    if (!posix_memalign(&result, ALIGNMENT, count)) {
+    if (posix_memalign(&result, ALIGNMENT, count)) {
       throw std::bad_alloc();
     }
     return result;
