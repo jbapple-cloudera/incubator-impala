@@ -24,7 +24,7 @@
 #include <kudu/util/slice.h>
 #include <kudu/util/status.h>
 #include <string>
-#include <tr1/memory>
+#include <memory>
 #include <vector>
 
 #include "common/object-pool.h"

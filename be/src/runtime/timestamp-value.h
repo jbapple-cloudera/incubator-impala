@@ -267,10 +267,7 @@ class TimestampValue {
   /// FLAGS_use_local_tz_for_unix_timestamp_conversions. If the flag is true, the value
   /// will be in the local time zone. If the flag is false, the value will be in UTC.
   boost::posix_time::ptime UnixTimeToPtime(time_t unix_time) const;
-} __attribute__((packed));
-
-// TimestampValue's first bytes have to be contiguous for hashing.
-static_assert(sizeof(TimestampValue) == 12, "TimestampValue didn't get packed");
+};
 
 /// This function must be called 'hash_value' to be picked up by boost.
 inline std::size_t hash_value(const TimestampValue& v) {

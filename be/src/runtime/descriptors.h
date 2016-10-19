@@ -19,7 +19,7 @@
 #ifndef IMPALA_RUNTIME_DESCRIPTORS_H
 #define IMPALA_RUNTIME_DESCRIPTORS_H
 
-#include <tr1/unordered_map>
+#include <unordered_map>
 #include <vector>
 #include <boost/scoped_ptr.hpp>
 #include <ostream>
@@ -449,9 +449,9 @@ class DescriptorTbl {
   std::string DebugString() const;
 
  private:
-  typedef std::tr1::unordered_map<TableId, TableDescriptor*> TableDescriptorMap;
-  typedef std::tr1::unordered_map<TupleId, TupleDescriptor*> TupleDescriptorMap;
-  typedef std::tr1::unordered_map<SlotId, SlotDescriptor*> SlotDescriptorMap;
+  typedef std::unordered_map<TableId, TableDescriptor*> TableDescriptorMap;
+  typedef std::unordered_map<TupleId, TupleDescriptor*> TupleDescriptorMap;
+  typedef std::unordered_map<SlotId, SlotDescriptor*> SlotDescriptorMap;
 
   TableDescriptorMap tbl_desc_map_;
   TupleDescriptorMap tuple_desc_map_;

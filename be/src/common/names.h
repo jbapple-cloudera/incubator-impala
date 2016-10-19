@@ -32,52 +32,52 @@
 /// occasions.
 #include <boost/version.hpp>
 
-#ifdef _GLIBCXX_VECTOR
+#if defined(_GLIBCXX_VECTOR) || defined(_LIBCPP_VECTOR)
 using std::vector;
 #endif
 
-#ifdef _GLIBCXX_MAP
+#if defined(_GLIBCXX_MAP) || defined(_LIBCPP_MAP)
 using std::map;
 using std::multimap;
 #endif
 
-#ifdef _GLIBCXX_LIST
+#if defined(_GLIBCXX_LIST) || defined(_LIBCPP_LIST)
 using std::list;
 #endif
 
-#ifdef _GLIBCXX_SET
+#if defined(_GLIBCXX_SET) || defined(_LIBCPP_SET)
 using std::set;
 using std::multiset;
 #endif
 
-#ifdef _GLIBCXX_STACK
+#if defined(_GLIBCXX_STACK) || defined(_LIBCPP_STACK)
 using std::stack;
 #endif
 
-#ifdef _GLIBCXX_QUEUE
+#if defined(_GLIBCXX_QUEUE) || defined(_LIBCPP_QUEUE)
 using std::queue;
 #endif
 
-#ifdef _GLIBCXX_DEQUE
+#if defined(_GLIBCXX_DEQUE) || defined(_LIBCPP_DEQUE)
 using std::deque;
 #endif
 
-#ifdef _GLIBCXX_STRING
+#if defined(_GLIBCXX_STRING) || defined(_LIBCPP_STRING)
 using std::string;
 #endif
 
-#ifdef _GLIBCXX_IOSTREAM
+#if defined(_GLIBCXX_IOSTREAM) || defined(_LIBCPP_IOSTREAM)
 using std::cout;
 using std::cin;
 using std::cerr;
 #endif
 
-#ifdef _GLIBCXX_OSTREAM
+#if defined(_GLIBCXX_OSTREAM) || defined(_LIBCPP_OSTREAM)
 using std::ostream;
 using std::endl;
 #endif
 
-#ifdef _GLIBCXX_IOS
+#if defined(_GLIBCXX_IOS) || defined(_LIBCPP_IOS)
 using std::fixed;
 using std::hex;
 using std::oct;
@@ -86,34 +86,32 @@ using std::left;
 using std::ios;
 #endif
 
-#ifdef _GLIBCXX_IOMANIP
+#if defined(_GLIBCXX_IOMANIP) || defined(_LIBCPP_IOMANIP)
 using std::setprecision;
 using std::setfill;
 using std::setw;
 #endif
 
-
-#ifdef _GLIBCXX_FSTREAM
+#if defined(_GLIBCXX_FSTREAM) || defined(_LIBCPP_FSTREAM)
 using std::fstream;
 using std::ifstream;
 using std::ofstream;
 #endif
 
-
-#ifdef _GLIBCXX_SSTREAM
+#if defined(_GLIBCXX_SSTREAM) || defined(_LIBCPP_SSTREAM)
 using std::stringstream;
 using std::istringstream;
 using std::ostringstream;
 #endif
 
-#ifdef _GLIBCXX_ALGORITHM
+#if defined(_GLIBCXX_ALGORITHM) || defined(_LIBCPP_ALGORITHM)
 using std::swap;
 using std::min;
 using std::max;
 using std::sort;
 #endif
 
-#ifdef _GLIBCXX_MEMORY
+#if defined(_GLIBCXX_MEMORY) || defined(_LIBCPP_MEMORY)
 using std::make_shared;
 using std::make_unique;
 using std::shared_ptr;

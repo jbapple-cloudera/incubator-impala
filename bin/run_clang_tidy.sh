@@ -30,27 +30,23 @@
 set -euo pipefail
 
 echo "Compiling"
-if ! ./buildall.sh -notests -tidy -noclean 1>/dev/null 2>/dev/null
+if ! ./buildall.sh -notests -tidy -so -noclean 1>/dev/null 2>/dev/null
 then
     echo "WARNING: compile failed" >&2
 fi
 
-DIRS=$(ls -d "${IMPALA_HOME}/be/src/"*/ | grep -v gutil)
-PIPE_DIRS=$(echo "${DIRS}" | tr '\n' '|')
+DIRS=$(ls -d "${IMPALA_HOME}/be/src/"*/ | grep -v gutil | tr '\n' ' ')
+PIPE_DIRS=$(echo "${DIRS}" | tr ' ' '|')
 
-# Reduce the concurrency to half the number of cores in the system. Note than nproc may
-# not be available on older distributions like Centos 5.5.
+# Reduce the concurrency to one less than the number of cores in the system. Note than
+# nproc may not be available on older distributions like Centos 5.5.
 if type nproc >/dev/null 2>&1; then
-  CORES=$(($(nproc) / 2))
+  CORES=$(($(nproc) - 1))
 else
-  CORES=4
+  CORES=7
 fi
 
-for DIR in ${DIRS}
-do
-    echo "TIDYING ${DIR}"
-    export PATH="${IMPALA_TOOLCHAIN}/llvm-${IMPALA_LLVM_VERSION}/share/clang\
+export PATH="${IMPALA_TOOLCHAIN}/llvm-${IMPALA_LLVM_VERSION}/share/clang\
 :${IMPALA_TOOLCHAIN}/llvm-${IMPALA_LLVM_VERSION}/bin/\
 :$PATH"
-    run-clang-tidy.py -header-filter "${PIPE_DIRS%?}" -j"${CORES}" "${DIR}"
-done
+run-clang-tidy.py -header-filter "${PIPE_DIRS%?}" -j"${CORES}" ${DIRS}
