@@ -71,6 +71,10 @@ SET(CXX_CLANG_FLAGS "${CXX_CLANG_FLAGS} -Wno-mismatched-tags")
 #   -Wno-unused-local-typedefs: Do not warn for local typedefs that are unused.
 SET(CXX_GCC_FLAGS "-g -Wno-unused-local-typedefs")
 
+SET(CXX_COMMON_FLAGS
+  "${CXX_COMMON_FLAGS} ${CXX_CLANG_FLAGS}")
+
+
 # compiler flags for different build types (run 'cmake -DCMAKE_BUILD_TYPE=<type> .')
 # For CMAKE_BUILD_TYPE=Debug
 #   -ggdb: Enable gdb debugging
@@ -79,13 +83,15 @@ SET(CXX_GCC_FLAGS "-g -Wno-unused-local-typedefs")
 #   -DNDEBUG: Turn off dchecks/asserts/debug only code.
 #
 # Debug information is stored as dwarf2 to be as compatible as possible
-SET(CXX_FLAGS_DEBUG "${CXX_GCC_FLAGS} -ggdb -gdwarf-2")
+SET(CXX_FLAGS_DEBUG "${CXX_CLANG_FLAGS} -ggdb -gdwarf-2")
 # -Werror: compile warnings should be errors when using the toolchain compiler.
 #   Only enable for debug builds because this is what we test in pre-commit tests.
 SET(CXX_FLAGS_DEBUG "${CXX_FLAGS_DEBUG} -Werror")
-SET(CXX_FLAGS_RELEASE "${CXX_GCC_FLAGS} -O3 -DNDEBUG -gdwarf-2")
+SET(CXX_FLAGS_RELEASE "${CXX_CLANG_FLAGS} -O3 -DNDEBUG -gdwarf-2")
 SET(CXX_FLAGS_ADDRESS_SANITIZER
   "${CXX_CLANG_FLAGS} -O1 -g -fsanitize=address -fno-omit-frame-pointer -DADDRESS_SANITIZER")
+
+
 
 # Set compile flags based on the build type.
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "DEBUG")

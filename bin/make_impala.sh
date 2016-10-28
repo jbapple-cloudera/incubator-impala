@@ -118,7 +118,7 @@ then
       if [[ "$TARGET_BUILD_TYPE" == "ADDRESS_SANITIZER" ]]; then
         CMAKE_ARGS+=(-DCMAKE_TOOLCHAIN_FILE=$IMPALA_HOME/cmake_modules/asan_toolchain.cmake)
       else
-        CMAKE_ARGS+=(-DCMAKE_TOOLCHAIN_FILE=$IMPALA_HOME/cmake_modules/toolchain.cmake)
+        CMAKE_ARGS+=(-DCMAKE_TOOLCHAIN_FILE=$IMPALA_HOME/cmake_modules/asan_toolchain.cmake)
       fi
     fi
 
