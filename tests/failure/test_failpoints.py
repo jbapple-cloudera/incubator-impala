@@ -114,6 +114,7 @@ class TestFailpoints(ImpalaTestSuite):
         lambda v: (v.get_value('location') != 'PREPARE_SCANNER' or
             v.get_value('target_node')[0] == 'SCAN HDFS'))
 
+  @pytest.mark.xfail(run=False, reason="Crashes Kudu on new Jenkins")
   def test_failpoints(self, vector):
     query = QUERY
     node_type, node_ids = vector.get_value('target_node')
