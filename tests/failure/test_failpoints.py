@@ -18,6 +18,7 @@
 # Injects failures  at specific locations in each of the plan nodes. Currently supports
 # two types of failures - cancellation of the query and a failure test hook.
 #
+import pytest
 import os
 import re
 from collections import defaultdict
