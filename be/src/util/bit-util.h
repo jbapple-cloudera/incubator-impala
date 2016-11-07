@@ -25,8 +25,11 @@
 #include <endian.h>
 #endif
 
-#include <boost/type_traits/make_unsigned.hpp>
+#include <climits>
+
 #include <limits>
+
+#include <boost/type_traits/make_unsigned.hpp>
 
 #include "common/compiler-util.h"
 #include "util/cpu-info.h"
@@ -238,6 +241,24 @@ class BitUtil {
   template <typename T>
   constexpr static T UnsetBit(T v, int bitpos) {
     return v & ~(static_cast<T>(0x1) << bitpos);
+  }
+
+  static inline int CountTrailingZeros(
+      unsigned int v, int otherwise = sizeof(unsigned int) * CHAR_BIT) {
+    if (UNLIKELY(v == 0)) return otherwise;
+    return __builtin_ctz(v);
+  }
+
+  static inline int CountTrailingZeros(
+      unsigned long v, int otherwise = sizeof(unsigned long) * CHAR_BIT) {
+    if (UNLIKELY(v == 0)) return otherwise;
+    return __builtin_ctzl(v);
+  }
+
+  static inline int CountTrailingZeros(
+      unsigned long long v, int otherwise = sizeof(unsigned long long) * CHAR_BIT) {
+    if (UNLIKELY(v == 0)) return otherwise;
+    return __builtin_ctzll(v);
   }
 };
 
