@@ -58,7 +58,7 @@ COLUMN, TYPE, #DISTINCT VALUES, #NULLS, MAX SIZE, AVG SIZE
 'double_col','DOUBLE',10,-1,8,8
 'date_string_col','STRING',736,-1,8,8
 'string_col','STRING',10,-1,1,1
-'timestamp_col','TIMESTAMP',7554,-1,16,16
+'timestamp_col','TIMESTAMP',7552,-1,16,16
 'year','INT',2,0,4,4
 'month','INT',12,0,4,4
 ---- TYPES
@@ -151,7 +151,7 @@ COLUMN, TYPE, #DISTINCT VALUES, #NULLS, MAX SIZE, AVG SIZE
 'double_col','DOUBLE',10,-1,8,8
 'date_string_col','STRING',736,-1,8,8
 'string_col','STRING',10,-1,1,1
-'timestamp_col','TIMESTAMP',7554,-1,16,16
+'timestamp_col','TIMESTAMP',7552,-1,16,16
 'year','INT',2,0,4,4
 'month','INT',12,0,4,4
 ---- TYPES
@@ -252,7 +252,7 @@ COLUMN, TYPE, #DISTINCT VALUES, #NULLS, MAX SIZE, AVG SIZE
 'double_col','DOUBLE',10,-1,8,8
 'date_string_col','STRING',688,-1,8,8
 'string_col','STRING',10,-1,1,1
-'timestamp_col','TIMESTAMP',7249,-1,16,16
+'timestamp_col','TIMESTAMP',7195,-1,16,16
 'year','INT',2,0,4,4
 'month','INT',12,0,4,4
 ---- TYPES
