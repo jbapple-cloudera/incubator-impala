@@ -18,6 +18,7 @@
 # Injects failures  at specific locations in each of the plan nodes. Currently supports
 # two types of failures - cancellation of the query and a failure test hook.
 #
+import pytest
 import os
 import re
 from collections import defaultdict
@@ -114,6 +115,7 @@ class TestFailpoints(ImpalaTestSuite):
         lambda v: (v.get_value('location') != 'PREPARE_SCANNER' or
             v.get_value('target_node')[0] == 'SCAN HDFS'))
 
+  @pytest.mark.execute_serially
   def test_failpoints(self, vector):
     query = QUERY
     node_type, node_ids = vector.get_value('target_node')
