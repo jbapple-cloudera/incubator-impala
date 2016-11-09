@@ -480,7 +480,7 @@ StringVal StringFunctions::RegexpExtract(FunctionContext* context, const StringV
   // TODO: fix this
   vector<re2::StringPiece> matches(max_matches);
   bool success =
-      re->Match(str_sp, 0, str.len, re2::RE2::UNANCHORED, &matches[0], max_matches);
+      re->Match(str_sp, 0, str.len, re2::RE2::UNANCHORED, matches.data(), max_matches);
   if (!success) return StringVal();
   // matches[0] is the whole string, matches[1] the first group, etc.
   const re2::StringPiece& match = matches[index.val];
@@ -626,12 +626,12 @@ StringVal StringFunctions::ConcatWs(FunctionContext* context, const StringVal& s
 
   // Loop again to append the data.
   uint8_t* ptr = result.ptr;
-  memcpy(ptr, strs[0].ptr, strs[0].len);
+  if (strs[0].len) memcpy(ptr, strs[0].ptr, strs[0].len);
   ptr += strs[0].len;
   for (int32_t i = 1; i < num_children; ++i) {
-    memcpy(ptr, sep.ptr, sep.len);
+    if (sep.len) memcpy(ptr, sep.ptr, sep.len);
     ptr += sep.len;
-    memcpy(ptr, strs[i].ptr, strs[i].len);
+    if (strs[i].len) memcpy(ptr, strs[i].ptr, strs[i].len);
     ptr += strs[i].len;
   }
   return result;
@@ -816,7 +816,7 @@ StringVal StringFunctions::BTrimString(FunctionContext* ctx,
 // Similar to strstr() except that the strings are not null-terminated
 static char* LocateSubstring(char* haystack, int hay_len, const char* needle, int needle_len) {
   DCHECK_GT(needle_len, 0);
-  DCHECK(haystack != NULL && needle != NULL);
+  DCHECK(needle != NULL);
   for (int i = 0; i < hay_len - needle_len + 1; ++i) {
     char* possible_needle = haystack + i;
     if (strncmp(possible_needle, needle, needle_len) == 0) return possible_needle;

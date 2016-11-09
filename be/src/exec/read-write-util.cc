@@ -17,6 +17,10 @@
 
 #include "exec/read-write-util.h"
 
+#include <type_traits>
+
+#include "util/overflow.h"
+
 #include "common/names.h"
 
 using namespace impala;
@@ -91,9 +95,11 @@ template ReadWriteUtil::ZIntResult
 ReadWriteUtil::ReadZInteger<ReadWriteUtil::MAX_ZINT_LEN, ReadWriteUtil::ZIntResult>(
     uint8_t** buf, uint8_t* buf_end);
 
-int ReadWriteUtil::PutZInt(int32_t integer, uint8_t* buf) {
+namespace {
+template <typename T> int PutZInteger(T integer, uint8_t* buf) {
   // Move the sign bit to the first bit.
-  uint32_t uinteger = (integer << 1) ^ (integer >> 31);
+  auto uinteger = Overflow::CastToUnsigned(integer);
+  uinteger = (uinteger << 1) ^ (integer >> (CHAR_BIT * sizeof(uinteger) - 1));
   const int mask = 0x7f;
   const int cont = 0x80;
   buf[0] = uinteger & mask;
@@ -107,22 +113,14 @@ int ReadWriteUtil::PutZInt(int32_t integer, uint8_t* buf) {
 
   return len;
 }
+} // namespace
+
+int ReadWriteUtil::PutZInt(int32_t integer, uint8_t* buf) {
+  return PutZInteger(integer, buf);
+}
 
 int ReadWriteUtil::PutZLong(int64_t longint, uint8_t* buf) {
-  // Move the sign bit to the first bit.
-  uint64_t ulongint = (longint << 1) ^ (longint >> 63);
-  const int mask = 0x7f;
-  const int cont = 0x80;
-  buf[0] = ulongint & mask;
-  int len = 1;
-  while ((ulongint >>= 7) != 0) {
-    // Set the continuation bit.
-    buf[len - 1] |= cont;
-    buf[len] = ulongint & mask;
-    ++len;
-  }
-
-  return len;
+  return PutZInteger(longint, buf);
 }
 
 string ReadWriteUtil::HexDump(const uint8_t* buf, int64_t length) {

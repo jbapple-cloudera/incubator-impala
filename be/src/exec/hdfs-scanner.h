@@ -346,7 +346,7 @@ class HdfsScanner {
   /// This must always be inlined so we can correctly replace the call to
   /// ExecNode::EvalConjuncts() during codegen.
   bool IR_ALWAYS_INLINE EvalConjuncts(TupleRow* row)  {
-    return ExecNode::EvalConjuncts(&(*scanner_conjunct_ctxs_)[0],
+    return ExecNode::EvalConjuncts(scanner_conjunct_ctxs_->data(),
                                    scanner_conjunct_ctxs_->size(), row);
   }
 

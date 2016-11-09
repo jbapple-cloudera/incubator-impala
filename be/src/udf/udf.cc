@@ -490,7 +490,7 @@ StringVal::StringVal(FunctionContext* context, int len) noexcept : len(len), ptr
 
 StringVal StringVal::CopyFrom(FunctionContext* ctx, const uint8_t* buf, size_t len) noexcept {
   StringVal result(ctx, len);
-  if (LIKELY(!result.is_null)) {
+  if (LIKELY(len > 0 && !result.is_null)) {
     memcpy(result.ptr, buf, len);
   }
   return result;

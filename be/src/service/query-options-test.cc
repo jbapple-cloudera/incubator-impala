@@ -73,8 +73,11 @@ TEST(QueryOptions, SetFilterWait) {
   // The upper and lower bound of the allowed values:
   EXPECT_FALSE(SetQueryOption("RUNTIME_FILTER_WAIT_TIME_MS", "-1", &options, NULL).ok());
 
-  EXPECT_FALSE(SetQueryOption("RUNTIME_FILTER_WAIT_TIME_MS",
-      lexical_cast<string>(numeric_limits<int32_t>::max() + 1), &options, NULL).ok());
+  EXPECT_FALSE(
+      SetQueryOption("RUNTIME_FILTER_WAIT_TIME_MS",
+          lexical_cast<string>(1 + static_cast<int64_t>(numeric_limits<int32_t>::max())),
+          &options, NULL)
+          .ok());
 
   EXPECT_OK(SetQueryOption("RUNTIME_FILTER_WAIT_TIME_MS", "0", &options, NULL));
   EXPECT_EQ(0, options.runtime_filter_wait_time_ms);

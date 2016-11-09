@@ -72,8 +72,10 @@ class Tuple {
   void Init(int size) { memset(this, 0, size); }
 
   void ClearNullBits(const TupleDescriptor& tuple_desc) {
-    memset(reinterpret_cast<uint8_t*>(this) + tuple_desc.null_bytes_offset(),
-        0, tuple_desc.num_null_bytes());
+    if (tuple_desc.num_null_bytes() > 0) {
+      memset(reinterpret_cast<uint8_t*>(this) + tuple_desc.null_bytes_offset(), 0,
+          tuple_desc.num_null_bytes());
+    }
   }
 
   /// The total size of all data represented in this tuple (tuple data and referenced

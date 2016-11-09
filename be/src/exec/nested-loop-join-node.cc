@@ -291,7 +291,7 @@ Status NestedLoopJoinNode::GetNextLeftOuterJoin(RuntimeState* state,
 
 Status NestedLoopJoinNode::GetNextLeftSemiJoin(RuntimeState* state,
     RowBatch* output_batch) {
-  ExprContext* const* join_conjunct_ctxs = &join_conjunct_ctxs_[0];
+  ExprContext* const* join_conjunct_ctxs = join_conjunct_ctxs_.data();
   size_t num_join_ctxs = join_conjunct_ctxs_.size();
   const int N = BitUtil::RoundUpToPowerOfTwo(state->batch_size());
 
@@ -336,7 +336,7 @@ Status NestedLoopJoinNode::GetNextLeftSemiJoin(RuntimeState* state,
 
 Status NestedLoopJoinNode::GetNextLeftAntiJoin(RuntimeState* state,
     RowBatch* output_batch) {
-  ExprContext* const* join_conjunct_ctxs = &join_conjunct_ctxs_[0];
+  ExprContext* const* join_conjunct_ctxs = join_conjunct_ctxs_.data();
   size_t num_join_ctxs = join_conjunct_ctxs_.size();
   const int N = BitUtil::RoundUpToPowerOfTwo(state->batch_size());
 
@@ -388,7 +388,7 @@ Status NestedLoopJoinNode::GetNextRightOuterJoin(RuntimeState* state,
 
 Status NestedLoopJoinNode::GetNextRightSemiJoin(RuntimeState* state,
     RowBatch* output_batch) {
-  ExprContext* const* join_conjunct_ctxs = &join_conjunct_ctxs_[0];
+  ExprContext* const* join_conjunct_ctxs = join_conjunct_ctxs_.data();
   size_t num_join_ctxs = join_conjunct_ctxs_.size();
   DCHECK(matching_build_rows_ != NULL);
   const int N = BitUtil::RoundUpToPowerOfTwo(state->batch_size());
@@ -445,7 +445,7 @@ Status NestedLoopJoinNode::GetNextRightSemiJoin(RuntimeState* state,
 
 Status NestedLoopJoinNode::GetNextRightAntiJoin(RuntimeState* state,
     RowBatch* output_batch) {
-  ExprContext* const* join_conjunct_ctxs = &join_conjunct_ctxs_[0];
+  ExprContext* const* join_conjunct_ctxs = join_conjunct_ctxs_.data();
   size_t num_join_ctxs = join_conjunct_ctxs_.size();
   DCHECK(matching_build_rows_ != NULL);
   const int N = BitUtil::RoundUpToPowerOfTwo(state->batch_size());
@@ -501,7 +501,7 @@ Status NestedLoopJoinNode::ProcessUnmatchedProbeRow(RuntimeState* state,
     RowBatch* output_batch) {
   DCHECK(!matched_probe_);
   DCHECK(current_probe_row_ != NULL);
-  ExprContext* const* conjunct_ctxs = &conjunct_ctxs_[0];
+  ExprContext* const* conjunct_ctxs = conjunct_ctxs_.data();
   size_t num_ctxs = conjunct_ctxs_.size();
   TupleRow* output_row = output_batch->GetRow(output_batch->AddRow());
   if (join_op_ == TJoinOp::LEFT_OUTER_JOIN || join_op_ == TJoinOp::FULL_OUTER_JOIN) {
@@ -530,7 +530,7 @@ Status NestedLoopJoinNode::ProcessUnmatchedBuildRows(
     current_build_row_idx_ = 0;
     process_unmatched_build_rows_ = true;
   }
-  ExprContext* const* conjunct_ctxs = &conjunct_ctxs_[0];
+  ExprContext* const* conjunct_ctxs = conjunct_ctxs_.data();
   size_t num_ctxs = conjunct_ctxs_.size();
   DCHECK(matching_build_rows_ != NULL);
 
@@ -584,9 +584,9 @@ Status NestedLoopJoinNode::ProcessUnmatchedBuildRows(
 Status NestedLoopJoinNode::FindBuildMatches(
     RuntimeState* state, RowBatch* output_batch, bool* return_output_batch) {
   *return_output_batch = false;
-  ExprContext* const* join_conjunct_ctxs = &join_conjunct_ctxs_[0];
+  ExprContext* const* join_conjunct_ctxs = join_conjunct_ctxs_.data();
   size_t num_join_ctxs = join_conjunct_ctxs_.size();
-  ExprContext* const* conjunct_ctxs = &conjunct_ctxs_[0];
+  ExprContext* const* conjunct_ctxs = conjunct_ctxs_.data();
   size_t num_ctxs = conjunct_ctxs_.size();
 
   const int N = BitUtil::RoundUpToPowerOfTwo(state->batch_size());

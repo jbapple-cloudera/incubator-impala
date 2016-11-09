@@ -272,7 +272,11 @@ bool HdfsAvroScanner::ReadAvroDecimal(int slot_byte_size, uint8_t** data,
     switch (slot_byte_size) {
       case 4: {
         int32_t* decimal = reinterpret_cast<int32_t*>(slot);
-        *decimal >>= bytes_to_fill * 8;
+        if (bytes_to_fill < sizeof(*decimal)) {
+          *decimal >>= bytes_to_fill * 8;
+        } else {
+          *decimal = 0;
+        }
         break;
       }
       case 8: {

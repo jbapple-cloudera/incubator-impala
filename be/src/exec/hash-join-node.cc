@@ -301,10 +301,10 @@ Status HashJoinNode::GetNext(RuntimeState* state, RowBatch* out_batch, bool* eos
     return LeftJoinGetNext(state, out_batch, eos);
   }
 
-  ExprContext* const* other_conjunct_ctxs = &other_join_conjunct_ctxs_[0];
+  ExprContext* const* other_conjunct_ctxs = other_join_conjunct_ctxs_.data();
   int num_other_conjunct_ctxs = other_join_conjunct_ctxs_.size();
 
-  ExprContext* const* conjunct_ctxs = &conjunct_ctxs_[0];
+  ExprContext* const* conjunct_ctxs = conjunct_ctxs_.data();
   int num_conjunct_ctxs = conjunct_ctxs_.size();
 
   // Explicitly manage the timer counter to avoid measuring time in the child

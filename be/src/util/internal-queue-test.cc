@@ -124,12 +124,12 @@ TEST(InternalQueue, TestRemove) {
 
   InternalQueue<IntNode> queue;
 
-  queue.Enqueue(&nodes[0]);
+  queue.Enqueue(nodes.data());
   queue.Remove(&nodes[1]);
   ASSERT_TRUE(queue.Validate());
-  queue.Remove(&nodes[0]);
+  queue.Remove(nodes.data());
   ASSERT_TRUE(queue.Validate());
-  queue.Remove(&nodes[0]);
+  queue.Remove(nodes.data());
   ASSERT_TRUE(queue.Validate());
 
   for (int i = 0; i < nodes.size(); ++i) {
@@ -191,7 +191,7 @@ TEST(InternalQueue, TestClear) {
   vector<IntNode> nodes;
   nodes.resize(100);
   InternalQueue<IntNode> queue;
-  queue.Enqueue(&nodes[0]);
+  queue.Enqueue(nodes.data());
   queue.Enqueue(&nodes[1]);
   queue.Enqueue(&nodes[2]);
 
@@ -199,7 +199,7 @@ TEST(InternalQueue, TestClear) {
   ASSERT_TRUE(queue.Validate());
   ASSERT_TRUE(queue.empty());
 
-  queue.Enqueue(&nodes[0]);
+  queue.Enqueue(nodes.data());
   queue.Enqueue(&nodes[1]);
   queue.Enqueue(&nodes[2]);
   ASSERT_TRUE(queue.Validate());

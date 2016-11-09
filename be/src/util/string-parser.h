@@ -26,6 +26,7 @@
 #include "common/logging.h"
 #include "runtime/decimal-value.h"
 #include "util/decimal-util.h"
+#include "util/overflow.h"
 
 namespace impala {
 
@@ -202,7 +203,8 @@ class StringParser {
       // Ex: 0.1e3 (which at this point would have precision == 1 and scale == 1), the
       //     scale must be set to 0 and the value set to 100 which means a precision of 3.
       precision += exponent - scale;
-      value *= DecimalUtil::GetScaleMultiplier<T>(exponent - scale);
+      value = Overflow::UnsignedProduct(
+          value, DecimalUtil::GetScaleMultiplier<T>(exponent - scale));
       scale = 0;
     } else {
       // Ex: 100e-4, the scale must be set to 4 but no adjustment to the value is needed,
@@ -230,7 +232,8 @@ class StringParser {
     }
 
     if (type_scale > scale) {
-      value *= DecimalUtil::GetScaleMultiplier<T>(type_scale - scale);
+      value = Overflow::UnsignedProduct(
+          value, DecimalUtil::GetScaleMultiplier<T>(type_scale - scale));
     }
 
     return DecimalValue<T>(is_negative ? -value : value);

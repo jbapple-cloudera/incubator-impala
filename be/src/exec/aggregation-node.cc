@@ -260,7 +260,7 @@ Status AggregationNode::GetNext(RuntimeState* state, RowBatch* row_batch, bool* 
     return Status::OK();
   }
   *eos = false;
-  ExprContext** ctxs = &conjunct_ctxs_[0];
+  ExprContext** ctxs = conjunct_ctxs_.data();
   int num_ctxs = conjunct_ctxs_.size();
 
   int count = 0;

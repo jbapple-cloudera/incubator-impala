@@ -309,7 +309,7 @@ Status HdfsTextScanner::FinishScanRange() {
         char* col = boundary_column_.buffer();
         int num_fields = 0;
         RETURN_IF_ERROR(delimited_text_parser_->FillColumns<true>(boundary_column_.len(),
-            &col, &num_fields, &field_locations_[0]));
+            &col, &num_fields, field_locations_.data()));
 
         MemPool* pool;
         TupleRow* tuple_row_mem;
@@ -373,10 +373,10 @@ Status HdfsTextScanner::ProcessRange(int* num_tuples, bool past_scan_range) {
     {
       // Parse the bytes for delimiters and store their offsets in field_locations_
       SCOPED_TIMER(parse_delimiter_timer_);
-      RETURN_IF_ERROR(delimited_text_parser_->ParseFieldLocations(max_tuples,
-          byte_buffer_end_ - byte_buffer_ptr_, &byte_buffer_ptr_,
-          &row_end_locations_[0],
-          &field_locations_[0], num_tuples, &num_fields, &col_start));
+      RETURN_IF_ERROR(delimited_text_parser_->ParseFieldLocations(
+          max_tuples, byte_buffer_end_ - byte_buffer_ptr_, &byte_buffer_ptr_,
+          row_end_locations_.data(), field_locations_.data(), num_tuples,
+          &num_fields, &col_start));
     }
 
     // Materialize the tuples into the in memory format for this query
@@ -386,7 +386,7 @@ Status HdfsTextScanner::ProcessRange(int* num_tuples, bool past_scan_range) {
       // There can be one partial tuple which returned no more fields from this buffer.
       DCHECK_LE(*num_tuples, num_fields + 1);
       if (!boundary_column_.IsEmpty()) {
-        RETURN_IF_ERROR(CopyBoundaryField(&field_locations_[0], pool));
+        RETURN_IF_ERROR(CopyBoundaryField(field_locations_.data(), pool));
         boundary_column_.Clear();
       }
       num_tuples_materialized = WriteFields(pool, tuple_row_mem, num_fields, *num_tuples);
@@ -739,7 +739,7 @@ int HdfsTextScanner::WriteFields(MemPool* pool, TupleRow* tuple_row,
     int num_fields, int num_tuples) {
   SCOPED_TIMER(scan_node_->materialize_tuple_timer());
 
-  FieldLocation* fields = &field_locations_[0];
+  FieldLocation* fields = field_locations_.data();
 
   int num_tuples_processed = 0;
   int num_tuples_materialized = 0;

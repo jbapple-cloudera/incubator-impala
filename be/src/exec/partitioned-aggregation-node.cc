@@ -465,7 +465,7 @@ void PartitionedAggregationNode::GetSingletonOutput(RowBatch* row_batch) {
   Tuple* output_tuple = GetOutputTuple(
       agg_fn_ctxs_, singleton_output_tuple_, row_batch->tuple_data_pool());
   row->SetTuple(0, output_tuple);
-  if (ExecNode::EvalConjuncts(&conjunct_ctxs_[0], conjunct_ctxs_.size(), row)) {
+  if (ExecNode::EvalConjuncts(conjunct_ctxs_.data(), conjunct_ctxs_.size(), row)) {
     row_batch->CommitLastRow();
     ++num_rows_returned_;
     COUNTER_SET(rows_returned_counter_, num_rows_returned_);
@@ -515,7 +515,7 @@ Status PartitionedAggregationNode::GetRowsFromPartition(RuntimeState* state,
         output_partition_->agg_fn_ctxs, intermediate_tuple, row_batch->tuple_data_pool());
     output_iterator_.Next();
     row->SetTuple(0, output_tuple);
-    if (ExecNode::EvalConjuncts(&conjunct_ctxs_[0], conjunct_ctxs_.size(), row)) {
+    if (ExecNode::EvalConjuncts(conjunct_ctxs_.data(), conjunct_ctxs_.size(), row)) {
       row_batch->CommitLastRow();
       ++num_rows_returned_;
       if (ReachedLimit() || row_batch->AtCapacity()) {
@@ -1044,7 +1044,7 @@ void PartitionedAggregationNode::CopyGroupingValues(Tuple* intermediate_tuple,
     // ptr and len were already copied to the fixed-len part of string value
     StringValue* sv = reinterpret_cast<StringValue*>(
         intermediate_tuple->GetSlot(slot_desc->tuple_offset()));
-    memcpy(buffer, sv->ptr, sv->len);
+    if (sv->len > 0) memcpy(buffer, sv->ptr, sv->len);
     sv->ptr = reinterpret_cast<char*>(buffer);
     buffer += sv->len;
   }
@@ -1376,7 +1376,7 @@ Status PartitionedAggregationNode::MoveHashPartitions(int64_t num_input_rows) {
       unaggregated_rows = partition->unaggregated_row_stream->num_rows();
     }
     double total_rows = aggregated_rows + unaggregated_rows;
-    double percent = total_rows * 100 / num_input_rows;
+    double percent = (num_input_rows == 0) ? 0 : (total_rows * 100 / num_input_rows);
     ss << "  " << i << " "  << (partition->is_spilled() ? "spilled" : "not spilled")
        << " (fraction=" << fixed << setprecision(2) << percent << "%)" << endl
        << "    #aggregated rows:" << aggregated_rows << endl

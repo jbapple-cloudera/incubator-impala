@@ -972,7 +972,7 @@ Status Sorter::Run::TryAddBlock(AddBlockMode mode,
 void Sorter::Run::CopyVarLenData(const vector<StringValue*>& string_values,
     uint8_t* dest) {
   for (StringValue* string_val: string_values) {
-    memcpy(dest, string_val->ptr, string_val->len);
+    if (string_val->ptr != nullptr) memcpy(dest, string_val->ptr, string_val->len);
     string_val->ptr = reinterpret_cast<char*>(dest);
     dest += string_val->len;
   }

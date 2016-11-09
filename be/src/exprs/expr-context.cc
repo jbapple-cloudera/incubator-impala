@@ -90,7 +90,7 @@ int ExprContext::Register(RuntimeState* state,
     int varargs_buffer_size) {
   fn_contexts_.push_back(FunctionContextImpl::CreateContext(
       state, pool_.get(), return_type, arg_types, varargs_buffer_size));
-  fn_contexts_ptr_ = &fn_contexts_[0];
+  fn_contexts_ptr_ = fn_contexts_.data();
   return fn_contexts_.size() - 1;
 }
 
@@ -105,7 +105,7 @@ Status ExprContext::Clone(RuntimeState* state, ExprContext** new_ctx) {
     (*new_ctx)->fn_contexts_.push_back(
         fn_contexts_[i]->impl()->Clone((*new_ctx)->pool_.get()));
   }
-  (*new_ctx)->fn_contexts_ptr_ = &((*new_ctx)->fn_contexts_[0]);
+  (*new_ctx)->fn_contexts_ptr_ = (*new_ctx)->fn_contexts_.data();
 
   (*new_ctx)->is_clone_ = true;
   (*new_ctx)->prepared_ = true;

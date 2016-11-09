@@ -17,6 +17,7 @@
 
 #include "exec/data-source-scan-node.h"
 
+#include <algorithm>
 #include <vector>
 #include <gutil/strings/substitute.h>
 
@@ -147,7 +148,7 @@ Status DataSourceScanNode::GetNextInputBatch() {
   input_batch_.reset(new TGetNextResult());
   next_row_idx_ = 0;
   // Reset all the indexes into the column value arrays to 0
-  memset(&cols_next_val_idx_[0], 0, sizeof(int) * cols_next_val_idx_.size());
+  std::fill(cols_next_val_idx_.begin(), cols_next_val_idx_.end(), 0);
   TGetNextParams params;
   params.__set_scan_handle(scan_handle_);
   RETURN_IF_ERROR(data_source_executor_->GetNext(params, input_batch_.get()));
@@ -320,7 +321,7 @@ Status DataSourceScanNode::GetNext(RuntimeState* state, RowBatch* row_batch, boo
   RETURN_IF_ERROR(
       row_batch->ResizeAndAllocateTupleBuffer(state, &tuple_buffer_size, &tuple_buffer));
   Tuple* tuple = reinterpret_cast<Tuple*>(tuple_buffer);
-  ExprContext** ctxs = &conjunct_ctxs_[0];
+  ExprContext** ctxs = conjunct_ctxs_.data();
   int num_ctxs = conjunct_ctxs_.size();
 
   while (true) {

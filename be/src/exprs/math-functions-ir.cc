@@ -24,12 +24,14 @@
 #include "exprs/anyval-util.h"
 #include "exprs/expr.h"
 #include "exprs/operators.h"
+#include "util/overflow.h"
 #include "util/string-parser.h"
 #include "runtime/runtime-state.h"
 #include "runtime/string-value.inline.h"
 
 #include "common/names.h"
 
+using std::numeric_limits;
 using std::uppercase;
 
 namespace impala {
@@ -357,25 +359,31 @@ StringVal MathFunctions::DecimalToBase(FunctionContext* ctx, int64_t src_num,
 
 bool MathFunctions::DecimalInBaseToDecimal(int64_t src_num, int8_t src_base,
     int64_t* result) {
-  uint64_t temp_num = abs(src_num);
-  int64_t place = 1;
-  *result = 0;
+  uint64_t temp_num = Overflow::UnsignedAbs(src_num);
+  uint64_t place = 1;
+  uint64_t temp_result = 0;
+  bool overflow = false;
   do {
-    int32_t digit = temp_num % 10;
+    if (UNLIKELY(overflow)) return false;
+    uint64_t digit = temp_num % 10;
     // Reset result if digit is not representable in src_base.
     if (digit >= src_base) {
-      *result = 0;
+      temp_result = 0;
       place = 1;
     } else {
-      *result += digit * place;
-      place *= src_base;
-      // Overflow.
-      if (UNLIKELY(*result < digit)) {
-        return false;
+      const auto digit_place = Overflow::CheckedProduct(digit, place, &overflow);
+      if (!overflow) {
+        temp_result = Overflow::CheckedSum(temp_result, digit_place, &overflow);
       }
+      if (UNLIKELY(overflow)) return false;
+      place = Overflow::CheckedProduct(place, static_cast<uint64_t>(src_base), &overflow);
     }
     temp_num /= 10;
   } while (temp_num > 0);
+  if (temp_result > static_cast<uint64_t>(numeric_limits<int64_t>::max())) {
+    return false;
+  }
+  *result = static_cast<int64_t>(temp_result);
   *result = (src_num < 0) ? -(*result) : *result;
   return true;
 }

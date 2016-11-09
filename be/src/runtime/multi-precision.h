@@ -48,6 +48,8 @@
 
 #include <limits>
 
+#include "util/overflow.h"
+
 namespace impala {
 
 /// We use the c++ int128_t type. This is stored using 16 bytes and very performant.
@@ -103,10 +105,10 @@ inline int128_t ConvertToInt128(int256_t x, int128_t max_value, bool* overflow) 
     uint64_t v = (x % base).convert_to<uint64_t>();
     x /= base;
     *overflow |= (v > max_value / scale);
-    int128_t n = v * scale;
-    *overflow |= (result > max_value - n);
-    result += n;
-    scale *= base;
+    int128_t n = Overflow::UnsignedProduct(v, scale);
+    *overflow |= (result > Overflow::UnsignedDifference(max_value, n));
+    result = Overflow::UnsignedSum(result, n);
+    scale = Overflow::UnsignedProduct(scale, base);
   }
   return negative ? -result : result;
 }

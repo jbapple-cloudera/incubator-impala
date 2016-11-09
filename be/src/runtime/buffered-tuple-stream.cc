@@ -801,7 +801,7 @@ bool BufferedTupleStream::DeepCopyInternal(TupleRow* row) noexcept {
       // TODO: Once IMPALA-1306 (Avoid passing empty tuples of non-materialized slots)
       // is delivered, the check below should become DCHECK(t != NULL).
       DCHECK(t != NULL || tuple_size == 0);
-      memcpy(write_ptr_, t, tuple_size);
+      if (t != nullptr) memcpy(write_ptr_, t, tuple_size);
       write_ptr_ += tuple_size;
     }
   }

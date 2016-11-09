@@ -106,14 +106,12 @@ template<typename T> struct MathLimits {
 // The hoop-jumping in *_INT_(MAX|MIN) below is so that the compiler does not
 // get an overflow while computing the constants.
 
-#define SIGNED_INT_MAX(Type) \
-  (((Type(1) << (sizeof(Type)*8 - 2)) - 1) + (Type(1) << (sizeof(Type)*8 - 2)))
+#define UNSIGNED_INT_MAX(Type) (~((Type)0))
 
-#define SIGNED_INT_MIN(Type) \
-  (-(Type(1) << (sizeof(Type)*8 - 2)) - (Type(1) << (sizeof(Type)*8 - 2)))
+#define SIGNED_INT_MAX(Type, UnsignedType) (Type(UNSIGNED_INT_MAX(UnsignedType) >> 1))
 
-#define UNSIGNED_INT_MAX(Type) \
-  (((Type(1) << (sizeof(Type)*8 - 1)) - 1) + (Type(1) << (sizeof(Type)*8 - 1)))
+#define SIGNED_INT_MIN(Type, UnsignedType) \
+  (-(Type(UNSIGNED_INT_MAX(UnsignedType) >> 1)) - 1)
 
 // Compile-time selected log10-related constants for integer types.
 #define SIGNED_MAX_10_EXP(Type) \
@@ -135,25 +133,24 @@ template<typename T> struct MathLimits {
   static bool IsPosInf(const Type x) { return false; } \
   static bool IsNegInf(const Type x) { return false; }
 
-#define DECL_SIGNED_INT_LIMITS(IntType, UnsignedIntType) \
-template<> \
-struct MathLimits<IntType> { \
-  typedef IntType Type; \
-  typedef UnsignedIntType UnsignedType; \
-  static const bool kIsSigned = true; \
-  static const bool kIsInteger = true; \
-  static const Type kPosMin = 1; \
-  static const Type kPosMax = SIGNED_INT_MAX(Type); \
-  static const Type kMin = SIGNED_INT_MIN(Type); \
-  static const Type kMax = kPosMax; \
-  static const Type kNegMin = -1; \
-  static const Type kNegMax = kMin; \
-  static const int kMin10Exp = 0; \
-  static const int kMax10Exp = SIGNED_MAX_10_EXP(Type); \
-  static const Type kEpsilon = 1; \
-  static const Type kStdError = 0; \
-  DECL_INT_LIMIT_FUNCS \
-};
+#define DECL_SIGNED_INT_LIMITS(IntType, UnsignedIntType)                       \
+  template <> struct MathLimits<IntType> {                                     \
+    typedef IntType Type;                                                      \
+    typedef UnsignedIntType UnsignedType;                                      \
+    static const bool kIsSigned = true;                                        \
+    static const bool kIsInteger = true;                                       \
+    static const Type kPosMin = 1;                                             \
+    static const Type kPosMax = SIGNED_INT_MAX(Type, UnsignedType);            \
+    static const Type kMin = SIGNED_INT_MIN(Type, UnsignedType);               \
+    static const Type kMax = kPosMax;                                          \
+    static const Type kNegMin = -1;                                            \
+    static const Type kNegMax = kMin;                                          \
+    static const int kMin10Exp = 0;                                            \
+    static const int kMax10Exp = SIGNED_MAX_10_EXP(Type);                      \
+    static const Type kEpsilon = 1;                                            \
+    static const Type kStdError = 0;                                           \
+    DECL_INT_LIMIT_FUNCS                                                       \
+  };
 
 #define DECL_UNSIGNED_INT_LIMITS(IntType) \
 template<> \

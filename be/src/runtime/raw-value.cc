@@ -158,7 +158,7 @@ void RawValue::Write(const void* value, void* dst, const ColumnType& type,
         // to reflect this change as well (the codegen'd Allocate() call is actually
         // generated in CodegenAnyVal::ToNativeValue()).
         dest->ptr = reinterpret_cast<char*>(pool->Allocate(dest->len));
-        memcpy(dest->ptr, src->ptr, dest->len);
+        if (dest->len > 0) memcpy(dest->ptr, src->ptr, dest->len);
       } else {
         dest->ptr = src->ptr;
       }

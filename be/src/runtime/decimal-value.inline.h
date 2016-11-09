@@ -20,6 +20,7 @@
 
 #include "runtime/decimal-value.h"
 
+#include <functional>
 #include <iomanip>
 #include <ostream>
 #include <sstream>
@@ -91,7 +92,7 @@ inline DecimalValue<T> DecimalValue<T>::ScaleTo(int src_scale, int dst_scale,
   } else if (delta_scale < 0) {
     T mult = DecimalUtil::GetScaleMultiplier<T>(-delta_scale);
     *overflow |= abs(result) >= max_value / mult;
-    result *= mult;
+    result = Overflow::UnsignedProduct(result, mult);
   }
   return DecimalValue(result);
 }
@@ -135,11 +136,12 @@ inline DecimalValue<RESULT_T> DecimalValue<T>::Add(int this_scale,
     // Check overflow.
     if (!*overflow && is_negative() == other.is_negative() &&
         result_precision == ColumnType::MAX_PRECISION) {
-      // Can only overflow if the signs are the same and result precision reaches
-      // max precision.
+      // Can only overflow if the signs are the same and result precision reaches max
+      // precision.
       *overflow |= DecimalUtil::MAX_UNSCALED_DECIMAL16 - abs(x) < abs(y);
-      // TODO: faster to return here? We don't care at all about the perf on
-      // the overflow case but what makes the normal path faster?
+      // TODO: faster to return later? We don't care at all about the perf on the overflow
+      // case but what makes the normal path faster?
+      return DecimalValue<RESULT_T>(Overflow::UnsignedSum(x, y));
     }
   } else {
     DCHECK(!*overflow) << "Cannot overflow unless result is Decimal16Value";
@@ -209,7 +211,7 @@ DecimalValue<RESULT_T> DecimalValue<T>::Multiply(int this_scale,
     // Check overflow
     *overflow |= DecimalUtil::MAX_UNSCALED_DECIMAL16 / abs(y) < abs(x);
   }
-  RESULT_T result = x * y;
+  RESULT_T result = Overflow::UnsignedProduct(x, y);
   int delta_scale = this_scale + other_scale - result_scale;
   if (UNLIKELY(delta_scale != 0)) {
     // In this case, the required resulting scale is larger than the max we support.

@@ -93,7 +93,7 @@ Status SelectNode::GetNext(RuntimeState* state, RowBatch* row_batch, bool* eos) 
 }
 
 bool SelectNode::CopyRows(RowBatch* output_batch) {
-  ExprContext** conjunct_ctxs = &conjunct_ctxs_[0];
+  ExprContext** conjunct_ctxs = conjunct_ctxs_.data();
   int num_conjunct_ctxs = conjunct_ctxs_.size();
 
   while (child_row_idx_ < child_row_batch_->num_rows()) {

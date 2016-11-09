@@ -385,7 +385,7 @@ Coordinator::~Coordinator() {
 }
 
 PlanFragmentExecutor* Coordinator::executor() {
-  return coord_instance_->executor();
+  return (coord_instance_ == nullptr) ? nullptr : coord_instance_->executor();
 }
 
 TExecNodePhase::type GetExecNodePhase(const string& key) {
@@ -1695,32 +1695,40 @@ void Coordinator::ReportQuerySummary() {
       SummaryStats& completion_times = fragment_profiles_[i].completion_times;
       SummaryStats& rates = fragment_profiles_[i].rates;
 
-      stringstream times_label;
-      times_label
-        << "min:" << PrettyPrinter::Print(
-            accumulators::min(completion_times), TUnit::TIME_NS)
-        << "  max:" << PrettyPrinter::Print(
-            accumulators::max(completion_times), TUnit::TIME_NS)
-        << "  mean: " << PrettyPrinter::Print(
-            accumulators::mean(completion_times), TUnit::TIME_NS)
-        << "  stddev:" << PrettyPrinter::Print(
-            sqrt(accumulators::variance(completion_times)), TUnit::TIME_NS);
+      if (accumulators::count(completion_times) != 0) {
+        stringstream times_label;
+        times_label << "min:"
+                    << PrettyPrinter::Print(accumulators::min(completion_times),
+                                            TUnit::TIME_NS) << "  max:"
+                    << PrettyPrinter::Print(accumulators::max(completion_times),
+                                            TUnit::TIME_NS) << "  mean: "
+                    << PrettyPrinter::Print(
+                           accumulators::mean(completion_times), TUnit::TIME_NS)
+                    << "  stddev:"
+                    << PrettyPrinter::Print(
+                           sqrt(accumulators::variance(completion_times)),
+                           TUnit::TIME_NS);
+        fragment_profiles_[i].averaged_profile->AddInfoString(
+            "completion times", times_label.str());
+      }
 
-      stringstream rates_label;
-      rates_label
-        << "min:" << PrettyPrinter::Print(
-            accumulators::min(rates), TUnit::BYTES_PER_SECOND)
-        << "  max:" << PrettyPrinter::Print(
-            accumulators::max(rates), TUnit::BYTES_PER_SECOND)
-        << "  mean:" << PrettyPrinter::Print(
-            accumulators::mean(rates), TUnit::BYTES_PER_SECOND)
-        << "  stddev:" << PrettyPrinter::Print(
-            sqrt(accumulators::variance(rates)), TUnit::BYTES_PER_SECOND);
+      if (accumulators::count(rates) != 0) {
+        stringstream rates_label;
+        rates_label << "min:" << PrettyPrinter::Print(accumulators::min(rates),
+                                                      TUnit::BYTES_PER_SECOND)
+                    << "  max:"
+                    << PrettyPrinter::Print(accumulators::max(rates),
+                                            TUnit::BYTES_PER_SECOND)
+                    << "  mean:"
+                    << PrettyPrinter::Print(accumulators::mean(rates),
+                                            TUnit::BYTES_PER_SECOND)
+                    << "  stddev:"
+                    << PrettyPrinter::Print(sqrt(accumulators::variance(rates)),
+                                            TUnit::BYTES_PER_SECOND);
+        fragment_profiles_[i].averaged_profile->AddInfoString(
+            "execution rates", rates_label.str());
+      }
 
-      fragment_profiles_[i].averaged_profile->AddInfoString(
-          "completion times", times_label.str());
-      fragment_profiles_[i].averaged_profile->AddInfoString(
-          "execution rates", rates_label.str());
       fragment_profiles_[i].averaged_profile->AddInfoString(
           "num instances", lexical_cast<string>(fragment_profiles_[i].num_instances));
     }

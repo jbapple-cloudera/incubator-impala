@@ -33,6 +33,7 @@ namespace impala {
 
 namespace {
 uint32_t ComputeMask(int bit_width) {
+  if (bit_width >= CHAR_BIT * sizeof(uint32_t)) return ~0u;
   return (1U << bit_width) - 1;
 }
 }

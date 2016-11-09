@@ -157,7 +157,10 @@ static void CopyStringVal(FunctionContext* ctx, const StringVal& src, StringVal*
       *dst = StringVal::null();
     } else {
       *dst = StringVal(copy, src.len);
-      memcpy(dst->ptr, src.ptr, src.len);
+      // Avoid memcpy() to or from NULL ptr as it's undefined.
+      if (LIKELY(dst->ptr != nullptr && src.ptr != nullptr)) {
+        memcpy(dst->ptr, src.ptr, src.len);
+      }
     }
   }
 }

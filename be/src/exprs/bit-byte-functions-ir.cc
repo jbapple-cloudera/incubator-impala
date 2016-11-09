@@ -22,6 +22,7 @@
 #include "gutil/strings/substitute.h"
 
 #include "util/bit-util.h"
+#include "util/overflow.h"
 
 #include "common/names.h"
 
@@ -147,8 +148,10 @@ static T RotateLeftImpl(T v, int32_t shift) {
   if (shift < 0) return RotateRightImpl(v, -shift);
 
   // Handle wrapping around multiple times
-  shift = shift % (sizeof(T) * 8);
-  return (v << shift) | BitUtil::ShiftRightLogical(v, sizeof(T) * 8 - shift);
+  shift = shift % (sizeof(T) * CHAR_BIT);
+  auto result = Overflow::CastToUnsigned(v);
+  result = (result << shift) | (result >> (sizeof(result) * CHAR_BIT - shift));
+  return Overflow::SignCastTo<T>(result);
 }
 
 template<typename T>
@@ -157,14 +160,18 @@ static T RotateRightImpl(T v, int32_t shift) {
   if (shift < 0) return RotateLeftImpl(v, -shift);
 
   // Handle wrapping around multiple times
-  shift = shift % (sizeof(T) * 8);
-  return BitUtil::ShiftRightLogical(v, shift) | (v << (sizeof(T) * 8 - shift));
+  shift = shift % (sizeof(T) * CHAR_BIT);
+  auto result = Overflow::CastToUnsigned(v);
+  result = (result >> shift) | (result << (sizeof(result) * CHAR_BIT - shift));
+  return Overflow::SignCastTo<T>(result);
 }
 
 template<typename T>
 static T ShiftLeftImpl(T v, int32_t shift) {
   if (shift < 0) return ShiftRightLogicalImpl(v, -shift);
-  return v << shift;
+  auto result = Overflow::CastToUnsigned(v);
+  result = result << shift;
+  return Overflow::SignCastTo<T>(result);
 }
 
 // Logical right shift rather than arithmetic right shift

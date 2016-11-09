@@ -59,6 +59,7 @@ CODE_COVERAGE=0
 BUILD_ASAN=0
 BUILD_FE_ONLY=0
 BUILD_TIDY=0
+BUILD_UBSAN=0
 MAKE_CMD=make
 LZO_CMAKE_ARGS=
 
@@ -112,6 +113,9 @@ do
       ;;
     -tidy)
       BUILD_TIDY=1
+      ;;
+    -ubsan)
+      BUILD_UBSAN=1
       ;;
     -testpairwise)
       EXPLORATION_STRATEGY=pairwise
@@ -179,6 +183,7 @@ do
       echo "[-codecoverage] : Build with code coverage [Default: False]"
       echo "[-asan] : Address sanitizer build [Default: False]"
       echo "[-tidy] : clang-tidy build [Default: False]"
+      echo "[-ubsan] : Undefined behavior build [Default: False]"
       echo "[-skiptests] : Skips execution of all tests"
       echo "[-notests] : Skips building and execution of all tests"
       echo "[-start_minicluster] : Start test cluster including Impala and all"\
@@ -255,6 +260,9 @@ if [[ ${BUILD_ASAN} -eq 1 ]]; then
 fi
 if [[ ${BUILD_TIDY} -eq 1 ]]; then
   CMAKE_BUILD_TYPE=TIDY
+fi
+if [[ ${BUILD_UBSAN} -eq 1 ]]; then
+  CMAKE_BUILD_TYPE=UBSAN
 fi
 
 MAKE_IMPALA_ARGS+=" -build_type=${CMAKE_BUILD_TYPE}"

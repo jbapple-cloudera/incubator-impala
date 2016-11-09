@@ -23,6 +23,7 @@
 #include "gutil/strings/substitute.h"
 #include "runtime/string-value.inline.h"
 #include "runtime/timestamp-value.h"
+#include "util/overflow.h"
 
 #include "common/names.h"
 
@@ -31,6 +32,13 @@
       FunctionContext* c, const TYPE& v1, const TYPE& v2) {\
     if (v1.is_null || v2.is_null) return TYPE::null();\
     return TYPE(v1.val OP v2.val);\
+  }
+
+#define BINARY_OP_FN_AS_UNSIGNED(NAME, TYPE, UNSIGNED_OP)   \
+  TYPE Operators::NAME##_##TYPE##_##TYPE(                   \
+      FunctionContext* c, const TYPE& v1, const TYPE& v2) { \
+    if (v1.is_null || v2.is_null) return TYPE::null();      \
+    return TYPE(UNSIGNED_OP(v1.val, v2.val));               \
   }
 
 #define BINARY_OP_CHECK_ZERO_FN(NAME, TYPE, OP) \
@@ -118,12 +126,12 @@
     BINARY_PREDICATE_CHAR_NONNULL(OP, v1, v2);\
   }
 
-#define BINARY_OP_NUMERIC_TYPES(NAME, OP) \
-  BINARY_OP_FN(NAME, TinyIntVal, OP); \
-  BINARY_OP_FN(NAME, SmallIntVal, OP);\
-  BINARY_OP_FN(NAME, IntVal, OP);\
-  BINARY_OP_FN(NAME, BigIntVal, OP);\
-  BINARY_OP_FN(NAME, FloatVal, OP);\
+#define BINARY_OP_NUMERIC_TYPES(NAME, OP, UNSIGNED_OP)      \
+  BINARY_OP_FN_AS_UNSIGNED(NAME, TinyIntVal, UNSIGNED_OP);  \
+  BINARY_OP_FN_AS_UNSIGNED(NAME, SmallIntVal, UNSIGNED_OP); \
+  BINARY_OP_FN_AS_UNSIGNED(NAME, IntVal, UNSIGNED_OP);      \
+  BINARY_OP_FN_AS_UNSIGNED(NAME, BigIntVal, UNSIGNED_OP);   \
+  BINARY_OP_FN(NAME, FloatVal, OP);                         \
   BINARY_OP_FN(NAME, DoubleVal, OP);
 
 #define BINARY_OP_INT_TYPES(NAME, OP) \
@@ -164,9 +172,9 @@
 
 namespace impala {
 
-BINARY_OP_NUMERIC_TYPES(Add, +);
-BINARY_OP_NUMERIC_TYPES(Subtract, -);
-BINARY_OP_NUMERIC_TYPES(Multiply, *);
+BINARY_OP_NUMERIC_TYPES(Add, +, Overflow::UnsignedSum);
+BINARY_OP_NUMERIC_TYPES(Subtract, -, Overflow::UnsignedDifference);
+BINARY_OP_NUMERIC_TYPES(Multiply, *, Overflow::UnsignedProduct);
 
 BINARY_OP_FN(Divide, DoubleVal, /);
 

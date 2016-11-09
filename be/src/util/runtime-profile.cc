@@ -383,8 +383,9 @@ void RuntimeProfile::ComputeTimeInProfile(int64_t total) {
   }
   // Counters have some margin, set to 0 if it was negative.
   local_time_ns_ = ::max<int64_t>(0, local_time_ns_);
+  const int64_t counter = total_time_counter()->value();
   local_time_percent_ =
-      static_cast<double>(local_time_ns_) / total_time_counter()->value();
+      (counter == 0) ? 0 : (static_cast<double>(local_time_ns_) / counter);
   local_time_percent_ = ::min(1.0, local_time_percent_) * 100;
 
   // Recurse on children
@@ -737,8 +738,8 @@ void RuntimeProfile::SerializeToArchiveString(stringstream* out) const {
   vector<uint8_t> compressed_buffer;
   compressed_buffer.resize(compressor->MaxOutputLen(serialized_buffer.size()));
   int64_t result_len = compressed_buffer.size();
-  uint8_t* compressed_buffer_ptr = &compressed_buffer[0];
-  compressor->ProcessBlock(true, serialized_buffer.size(), &serialized_buffer[0],
+  uint8_t* compressed_buffer_ptr = compressed_buffer.data();
+  compressor->ProcessBlock(true, serialized_buffer.size(), serialized_buffer.data(),
       &result_len, &compressed_buffer_ptr);
   compressed_buffer.resize(result_len);
 
@@ -995,7 +996,9 @@ void RuntimeProfile::TimeSeriesCounter::ToThrift(TTimeSeriesCounter* counter) {
   SpinLock* lock;
   const int64_t* samples = samples_.GetSamples(&num, &period, &lock);
   counter->values.resize(num);
-  memcpy(&counter->values[0], samples, num * sizeof(int64_t));
+  if (num > 0) {
+    memcpy(&counter->values[0], samples, num * sizeof(int64_t));
+  }
   lock->unlock();
   counter->period_ms = period;
 }

@@ -57,7 +57,7 @@ static inline int StringCompare(const char* s1, int n1, const char* s2, int n2, 
     }
   }
   // TODO: for some reason memcmp is way slower than strncmp (2.5x)  why?
-  int result = strncmp(s1, s2, len);
+  const int result = (len > 0) ? strncmp(s1, s2, len) : 0;
   if (result != 0) return result;
   return n1 - n2;
 }

@@ -186,7 +186,7 @@ Status KuduScanner::DecodeRowsIntoRowBatch(RowBatch* row_batch, Tuple** tuple_me
     KuduScanBatch::RowPtr krow = cur_kudu_batch_.Row(krow_idx);
     Tuple* kudu_tuple = reinterpret_cast<Tuple*>(const_cast<void*>(krow.cell(0)));
     ++cur_kudu_batch_num_read_;
-    if (has_conjuncts && !ExecNode::EvalConjuncts(&conjunct_ctxs_[0],
+    if (has_conjuncts && !ExecNode::EvalConjuncts(conjunct_ctxs_.data(),
         conjunct_ctxs_.size(), reinterpret_cast<TupleRow*>(&kudu_tuple))) {
       continue;
     }

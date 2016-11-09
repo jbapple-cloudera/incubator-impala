@@ -411,15 +411,15 @@ class ExprTest : public testing::Test {
     switch (expected_type.GetByteSize()) {
       case 4:
         EXPECT_EQ(expected_result.value(), StringParser::StringToDecimal<int32_t>(
-            &value[0], value.size(), expected_type, &result).value());
+            value.data(), value.size(), expected_type, &result).value());
         break;
       case 8:
         EXPECT_EQ(expected_result.value(), StringParser::StringToDecimal<int64_t>(
-            &value[0], value.size(), expected_type, &result).value());
+            value.data(), value.size(), expected_type, &result).value());
         break;
       case 16:
         EXPECT_EQ(expected_result.value(), StringParser::StringToDecimal<int128_t>(
-            &value[0], value.size(), expected_type, &result).value());
+            value.data(), value.size(), expected_type, &result).value());
         break;
       default:
         EXPECT_TRUE(false) << expected_type << " " << expected_type.GetByteSize();
@@ -812,18 +812,38 @@ class ExprTest : public testing::Test {
   // Note that adding the " " when generating the expression is not just cosmetic.
   // We have "--" as a comment element in our lexer,
   // so subtraction of a negative value will be ignored without " ".
+  //
+  // There are two variants: one for floating point operands and one for integer operands,
+  // because integer operations are performed as if the integers were unsigned to enforce
+  // two's complement overflow, which is not guaranteed by the C++ standard for signed
+  // integer types.
   template <typename LeftOp, typename RightOp, typename Result>
-  void TestFixedResultTypeOps(LeftOp a, RightOp b, const ColumnType& expected_type) {
+  void TestFloatingFixedResultTypeOps(
+      LeftOp a, RightOp b, const ColumnType& expected_type) {
     Result cast_a = static_cast<Result>(a);
     Result cast_b = static_cast<Result>(b);
     string a_str = LiteralToString<Result>(cast_a);
     string b_str = LiteralToString<Result>(cast_b);
-    TestValue(a_str + " + " + b_str, expected_type,
-        static_cast<Result>(cast_a + cast_b));
+    TestValue(a_str + " + " + b_str, expected_type, static_cast<Result>(cast_a + cast_b));
+    TestValue(a_str + " - " + b_str, expected_type, static_cast<Result>(cast_a - cast_b));
+    TestValue(a_str + " * " + b_str, expected_type, static_cast<Result>(cast_a * cast_b));
+    TestValue(a_str + " / " + b_str, TYPE_DOUBLE,
+        static_cast<double>(a) / static_cast<double>(b));
+  }
+
+  template <typename LeftOp, typename RightOp, typename Result>
+  void TestIntegralFixedResultTypeOps(
+      LeftOp a, RightOp b, const ColumnType& expected_type) {
+    Result cast_a = static_cast<Result>(a);
+    Result cast_b = static_cast<Result>(b);
+    string a_str = LiteralToString<Result>(cast_a);
+    string b_str = LiteralToString<Result>(cast_b);
+    TestValue(
+        a_str + " + " + b_str, expected_type, Overflow::UnsignedSum(cast_a, cast_b));
     TestValue(a_str + " - " + b_str, expected_type,
-        static_cast<Result>(cast_a - cast_b));
-    TestValue(a_str + " * " + b_str, expected_type,
-        static_cast<Result>(cast_a * cast_b));
+        Overflow::UnsignedDifference(cast_a, cast_b));
+    TestValue(
+        a_str + " * " + b_str, expected_type, Overflow::UnsignedProduct(cast_a, cast_b));
     TestValue(a_str + " / " + b_str, TYPE_DOUBLE,
         static_cast<double>(a) / static_cast<double>(b));
   }
@@ -983,30 +1003,30 @@ bool ExprTest::ConvertValue<bool>(const string& value) {
 template <>
 int8_t ExprTest::ConvertValue<int8_t>(const string& value) {
   StringParser::ParseResult result;
-  return StringParser::StringToInt<int8_t>(&value[0], value.size(), &result);
+  return StringParser::StringToInt<int8_t>(value.data(), value.size(), &result);
 }
 
 template <>
 int16_t ExprTest::ConvertValue<int16_t>(const string& value) {
   StringParser::ParseResult result;
-  return StringParser::StringToInt<int16_t>(&value[0], value.size(), &result);
+  return StringParser::StringToInt<int16_t>(value.data(), value.size(), &result);
 }
 
 template <>
 int32_t ExprTest::ConvertValue<int32_t>(const string& value) {
   StringParser::ParseResult result;
-  return StringParser::StringToInt<int32_t>(&value[0], value.size(), &result);
+  return StringParser::StringToInt<int32_t>(value.data(), value.size(), &result);
 }
 
 template <>
 int64_t ExprTest::ConvertValue<int64_t>(const string& value) {
   StringParser::ParseResult result;
-  return StringParser::StringToInt<int64_t>(&value[0], value.size(), &result);
+  return StringParser::StringToInt<int64_t>(value.data(), value.size(), &result);
 }
 
 template <>
 TimestampValue ExprTest::ConvertValue<TimestampValue>(const string& value) {
-  return TimestampValue(&value[0], value.size());
+  return TimestampValue(value.data(), value.size());
 }
 
 // We can't put this into TestValue() because GTest can't resolve
@@ -1125,69 +1145,70 @@ TEST_F(ExprTest, LiteralExprs) {
 
 TEST_F(ExprTest, ArithmeticExprs) {
   // Test float ops.
-  TestFixedResultTypeOps<float, float, double>(min_float_values_[TYPE_FLOAT],
-      min_float_values_[TYPE_FLOAT], TYPE_DOUBLE);
-  TestFixedResultTypeOps<float, double, double>(min_float_values_[TYPE_FLOAT],
-      min_float_values_[TYPE_DOUBLE], TYPE_DOUBLE);
-  TestFixedResultTypeOps<double, double, double>(min_float_values_[TYPE_DOUBLE],
-      min_float_values_[TYPE_DOUBLE], TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<float, float, double>(
+      min_float_values_[TYPE_FLOAT], min_float_values_[TYPE_FLOAT], TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<float, double, double>(
+      min_float_values_[TYPE_FLOAT], min_float_values_[TYPE_DOUBLE], TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<double, double, double>(
+      min_float_values_[TYPE_DOUBLE], min_float_values_[TYPE_DOUBLE], TYPE_DOUBLE);
 
   // Test behavior of float ops at max/min value boundaries.
   // The tests with float type should trivially pass, since their results are double.
-  TestFixedResultTypeOps<float, float, double>(numeric_limits<float>::min(),
-      numeric_limits<float>::min(), TYPE_DOUBLE);
-  TestFixedResultTypeOps<float, float, double>(numeric_limits<float>::max(),
-      numeric_limits<float>::max(), TYPE_DOUBLE);
-  TestFixedResultTypeOps<float, float, double>(numeric_limits<float>::min(),
-      numeric_limits<float>::max(), TYPE_DOUBLE);
-  TestFixedResultTypeOps<float, float, double>(numeric_limits<float>::max(),
-      numeric_limits<float>::min(), TYPE_DOUBLE);
-  TestFixedResultTypeOps<double, double, double>(numeric_limits<double>::min(),
-      numeric_limits<double>::min(), TYPE_DOUBLE);
-  TestFixedResultTypeOps<double, double, double>(numeric_limits<double>::max(),
-      numeric_limits<double>::max(), TYPE_DOUBLE);
-  TestFixedResultTypeOps<double, double, double>(numeric_limits<double>::min(),
-      numeric_limits<double>::max(), TYPE_DOUBLE);
-  TestFixedResultTypeOps<double, double, double>(numeric_limits<double>::max(),
-      numeric_limits<double>::min(), TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<float, float, double>(
+      numeric_limits<float>::min(), numeric_limits<float>::min(), TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<float, float, double>(
+      numeric_limits<float>::max(), numeric_limits<float>::max(), TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<float, float, double>(
+      numeric_limits<float>::min(), numeric_limits<float>::max(), TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<float, float, double>(
+      numeric_limits<float>::max(), numeric_limits<float>::min(), TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<double, double, double>(
+      numeric_limits<double>::min(), numeric_limits<double>::min(), TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<double, double, double>(
+      numeric_limits<double>::max(), numeric_limits<double>::max(), TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<double, double, double>(
+      numeric_limits<double>::min(), numeric_limits<double>::max(), TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<double, double, double>(
+      numeric_limits<double>::max(), numeric_limits<double>::min(), TYPE_DOUBLE);
 
   // Test behavior with zero (especially for division by zero).
-  TestFixedResultTypeOps<float, float, double>(min_float_values_[TYPE_FLOAT],
-      0.0f, TYPE_DOUBLE);
-  TestFixedResultTypeOps<double, double, double>(min_float_values_[TYPE_DOUBLE],
-      0.0, TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<float, float, double>(
+      min_float_values_[TYPE_FLOAT], 0.0f, TYPE_DOUBLE);
+  TestFloatingFixedResultTypeOps<double, double, double>(
+      min_float_values_[TYPE_DOUBLE], 0.0, TYPE_DOUBLE);
 
   // Test ops that always promote to fixed type (e.g., next higher resolution type).
-  TestFixedResultTypeOps<int8_t, int8_t, int16_t>(min_int_values_[TYPE_TINYINT],
-      min_int_values_[TYPE_TINYINT], TYPE_SMALLINT);
-  TestFixedResultTypeOps<int8_t, int16_t, int32_t>(min_int_values_[TYPE_TINYINT],
-      min_int_values_[TYPE_SMALLINT], TYPE_INT);
-  TestFixedResultTypeOps<int8_t, int32_t, int64_t>(min_int_values_[TYPE_TINYINT],
-      min_int_values_[TYPE_INT], TYPE_BIGINT);
-  TestFixedResultTypeOps<int8_t, int64_t, int64_t>(min_int_values_[TYPE_TINYINT],
-      min_int_values_[TYPE_BIGINT], TYPE_BIGINT);
-  TestFixedResultTypeOps<int16_t, int16_t, int32_t>(min_int_values_[TYPE_SMALLINT],
-      min_int_values_[TYPE_SMALLINT], TYPE_INT);
-  TestFixedResultTypeOps<int16_t, int32_t, int64_t>(min_int_values_[TYPE_SMALLINT],
-      min_int_values_[TYPE_INT], TYPE_BIGINT);
-  TestFixedResultTypeOps<int16_t, int64_t, int64_t>(min_int_values_[TYPE_SMALLINT],
-      min_int_values_[TYPE_BIGINT], TYPE_BIGINT);
-  TestFixedResultTypeOps<int32_t, int32_t, int64_t>(min_int_values_[TYPE_INT],
-      min_int_values_[TYPE_INT], TYPE_BIGINT);
-  TestFixedResultTypeOps<int32_t, int64_t, int64_t>(min_int_values_[TYPE_INT],
-      min_int_values_[TYPE_BIGINT], TYPE_BIGINT);
-  TestFixedResultTypeOps<int64_t, int64_t, int64_t>(min_int_values_[TYPE_BIGINT],
-      min_int_values_[TYPE_BIGINT], TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int8_t, int8_t, int16_t>(
+      min_int_values_[TYPE_TINYINT], min_int_values_[TYPE_TINYINT], TYPE_SMALLINT);
+  TestIntegralFixedResultTypeOps<int8_t, int16_t, int32_t>(
+      min_int_values_[TYPE_TINYINT], min_int_values_[TYPE_SMALLINT], TYPE_INT);
+  TestIntegralFixedResultTypeOps<int8_t, int32_t, int64_t>(
+      min_int_values_[TYPE_TINYINT], min_int_values_[TYPE_INT], TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int8_t, int64_t, int64_t>(
+      min_int_values_[TYPE_TINYINT], min_int_values_[TYPE_BIGINT], TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int16_t, int16_t, int32_t>(
+      min_int_values_[TYPE_SMALLINT], min_int_values_[TYPE_SMALLINT], TYPE_INT);
+  TestIntegralFixedResultTypeOps<int16_t, int32_t, int64_t>(
+      min_int_values_[TYPE_SMALLINT], min_int_values_[TYPE_INT], TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int16_t, int64_t, int64_t>(
+      min_int_values_[TYPE_SMALLINT], min_int_values_[TYPE_BIGINT], TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int32_t, int32_t, int64_t>(
+      min_int_values_[TYPE_INT], min_int_values_[TYPE_INT], TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int32_t, int64_t, int64_t>(
+      min_int_values_[TYPE_INT], min_int_values_[TYPE_BIGINT], TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int64_t, int64_t, int64_t>(
+      min_int_values_[TYPE_BIGINT], min_int_values_[TYPE_BIGINT], TYPE_BIGINT);
 
   // Test behavior on overflow/underflow.
-  TestFixedResultTypeOps<int64_t, int64_t, int64_t>(numeric_limits<int64_t>::min()+1,
-      numeric_limits<int64_t>::min()+1, TYPE_BIGINT);
-  TestFixedResultTypeOps<int64_t, int64_t, int64_t>(numeric_limits<int64_t>::max(),
-      numeric_limits<int64_t>::max(), TYPE_BIGINT);
-  TestFixedResultTypeOps<int64_t, int64_t, int64_t>(numeric_limits<int64_t>::min()+1,
-      numeric_limits<int64_t>::max(), TYPE_BIGINT);
-  TestFixedResultTypeOps<int64_t, int64_t, int64_t>(numeric_limits<int64_t>::max(),
-      numeric_limits<int64_t>::min()+1, TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int64_t, int64_t, int64_t>(
+      numeric_limits<int64_t>::min() + 1, numeric_limits<int64_t>::min() + 1,
+      TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int64_t, int64_t, int64_t>(
+      numeric_limits<int64_t>::max(), numeric_limits<int64_t>::max(), TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int64_t, int64_t, int64_t>(
+      numeric_limits<int64_t>::min() + 1, numeric_limits<int64_t>::max(), TYPE_BIGINT);
+  TestIntegralFixedResultTypeOps<int64_t, int64_t, int64_t>(
+      numeric_limits<int64_t>::max(), numeric_limits<int64_t>::min() + 1, TYPE_BIGINT);
 
   // Test behavior with NULLs.
   TestNullOperandFixedResultTypeOps<float, double>(min_float_values_[TYPE_FLOAT],

@@ -101,7 +101,7 @@ class UdfTestHarness {
     boost::scoped_ptr<FunctionContext> context(CreateTestContext(return_type, arg_types));
     SetConstantArgs(context.get(), constant_args);
     if (!RunPrepareFn(init_fn, context.get())) return false;
-    RET ret = fn(context.get(), a1.size(), &a1[0]);
+    RET ret = fn(context.get(), a1.size(), a1.data());
     RunCloseFn(close_fn, context.get());
     return Validate(context.get(), expected, ret);
   }
@@ -133,7 +133,7 @@ class UdfTestHarness {
     boost::scoped_ptr<FunctionContext> context(CreateTestContext(return_type, arg_types));
     SetConstantArgs(context.get(), constant_args);
     if (!RunPrepareFn(init_fn, context.get())) return false;
-    RET ret = fn(context.get(), a1, a2.size(), &a2[0]);
+    RET ret = fn(context.get(), a1, a2.size(), a2.data());
     RunCloseFn(close_fn, context.get());
     return Validate(context.get(), expected, ret);
   }
@@ -165,7 +165,7 @@ class UdfTestHarness {
     boost::scoped_ptr<FunctionContext> context(CreateTestContext(return_type, arg_types));
     SetConstantArgs(context.get(), constant_args);
     if (!RunPrepareFn(init_fn, context.get())) return false;
-    RET ret = fn(context.get(), a1, a2, a3.size(), &a3[0]);
+    RET ret = fn(context.get(), a1, a2, a3.size(), a3.data());
     RunCloseFn(close_fn, context.get());
     return Validate(context.get(), expected, ret);
   }
@@ -199,7 +199,7 @@ class UdfTestHarness {
     boost::scoped_ptr<FunctionContext> context(CreateTestContext(return_type, arg_types));
     SetConstantArgs(context.get(), constant_args);
     if (!RunPrepareFn(init_fn, context.get())) return false;
-    RET ret = fn(context.get(), a1, a2, a3, a4.size(), &a4[0]);
+    RET ret = fn(context.get(), a1, a2, a3, a4.size(), a4.data());
     RunCloseFn(close_fn, context.get());
     return Validate(context.get(), expected, ret);
   }

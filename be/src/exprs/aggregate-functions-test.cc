@@ -89,7 +89,7 @@ TEST(HistogramTest, TestInt) {
       "1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, "
       "1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, "
       "1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1";
-    EXPECT_TRUE(test_histogram.Execute(input, StringVal(&expected[0])))
+    EXPECT_TRUE(test_histogram.Execute(input, StringVal(expected)))
         << test_histogram.GetErrorMsg();
   }
 
@@ -160,7 +160,7 @@ TEST(HistogramTest, TestString) {
       "x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, "
       "x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, "
       "x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x, x";
-  EXPECT_TRUE(test.Execute(input, StringVal(&expected[0]))) << test.GetErrorMsg();
+  EXPECT_TRUE(test.Execute(input, StringVal(expected))) << test.GetErrorMsg();
 }
 
 IMPALA_TEST_MAIN();

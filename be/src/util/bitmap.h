@@ -19,6 +19,8 @@
 #ifndef IMPALA_UTIL_BITMAP_H
 #define IMPALA_UTIL_BITMAP_H
 
+#include <algorithm>
+
 #include "util/bit-util.h"
 
 namespace impala {
@@ -75,7 +77,7 @@ class Bitmap {
   }
 
   void SetAllBits(bool b) {
-    memset(&buffer_[0], 255 * b, buffer_.size() * sizeof(uint64_t));
+    std::fill(buffer_.begin(), buffer_.end(), b ? ~0ULL : 0);
   }
 
   int64_t num_bits() const { return num_bits_; }
