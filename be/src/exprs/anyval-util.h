@@ -131,7 +131,11 @@ class AnyValUtil {
   static uint64_t Hash64(const TimestampVal& v, const FunctionContext::TypeDesc&,
       int64_t seed) {
     TimestampValue tv = TimestampValue::FromTimestampVal(v);
-    return HashUtil::MurmurHash2_64(&tv, 12, seed);
+    char intermediate[12];
+    memcpy(intermediate, &tv.time(), sizeof(tv.time()));
+    memcpy(intermediate + sizeof(tv.time()), &tv.date(), sizeof(tv.date()));
+    static_assert(sizeof(intermediate) == sizeof(tv.time()) + sizeof(tv.date()), "oops");
+    return HashUtil::MurmurHash2_64(intermediate, 12, seed);
   }
 
   static uint64_t Hash64(const DecimalVal& v, const FunctionContext::TypeDesc& t,

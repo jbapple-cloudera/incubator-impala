@@ -130,7 +130,8 @@ class HashUtil {
     const uint64_t* end = data + (len / sizeof(uint64_t));
 
     while (data != end) {
-      uint64_t k = *data++;
+      uint64_t k;
+      memcpy(&k, data++, sizeof(k));
       k *= MURMUR_PRIME;
       k ^= k >> MURMUR_R;
       k *= MURMUR_PRIME;
@@ -138,17 +139,25 @@ class HashUtil {
       h *= MURMUR_PRIME;
     }
 
-    const uint8_t* data2 = reinterpret_cast<const uint8_t*>(data);
-    switch (len & 7) {
-      case 7: h ^= uint64_t(data2[6]) << 48;
-      case 6: h ^= uint64_t(data2[5]) << 40;
-      case 5: h ^= uint64_t(data2[4]) << 32;
-      case 4: h ^= uint64_t(data2[3]) << 24;
-      case 3: h ^= uint64_t(data2[2]) << 16;
-      case 2: h ^= uint64_t(data2[1]) << 8;
-      case 1: h ^= uint64_t(data2[0]);
-              h *= MURMUR_PRIME;
+    if (len) {
+      uint64_t rest = 0;
+      memcpy(&rest, data, len & 7);
+      h ^= rest;
+      h *= MURMUR_PRIME;
     }
+
+    // const uint8_t* data2 = reinterpret_cast<const uint8_t*>(data);
+    // char c;
+    // switch (len & 7) {
+    //   case 7: h ^= uint64_t(*(char *)memcpy(&c, &data2[6], 1)) << 48;
+    //   case 6: h ^= uint64_t(*(char *)memcpy(&c, &data2[5], 1)) << 40;
+    //   case 5: h ^= uint64_t(*(char *)memcpy(&c, &data2[4], 1)) << 32;
+    //   case 4: h ^= uint64_t(*(char *)memcpy(&c, &data2[3], 1)) << 24;
+    //   case 3: h ^= uint64_t(*(char *)memcpy(&c, &data2[2], 1)) << 16;
+    //   case 2: h ^= uint64_t(*(char *)memcpy(&c, &data2[1], 1)) << 8;
+    //   case 1: h ^= uint64_t(*(char *)memcpy(&c, &data2[0], 1));
+    //           h *= MURMUR_PRIME;
+    // }
 
     h ^= h >> MURMUR_R;
     h *= MURMUR_PRIME;

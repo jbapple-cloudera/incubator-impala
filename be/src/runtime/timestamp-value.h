@@ -262,6 +262,8 @@ class TimestampValue {
   /// 4 -bytes - stores the date as a day
   boost::gregorian::date date_;
 
+  uint32_t garbage = 0xabad1deaU;
+
   /// Return a ptime representation of the given Unix time (seconds since the Unix epoch).
   /// The time zone of the resulting ptime is determined by
   /// FLAGS_use_local_tz_for_unix_timestamp_conversions. If the flag is true, the value
