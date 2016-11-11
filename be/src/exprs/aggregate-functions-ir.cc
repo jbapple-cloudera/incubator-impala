@@ -1206,6 +1206,14 @@ uint64_t AggregateFunctions::HllFinalEstimate(const uint8_t* buckets,
   DCHECK(buckets != NULL);
   DCHECK_EQ(num_buckets, HLL_LEN);
 
+  uint64_t accum = 0, result = 0;
+  for (int32_t i = 0; i < num_buckets; i += sizeof(accum)) {
+    memcpy(&accum, &buckets[i], sizeof(accum));
+    result ^= accum;
+  }
+
+  return result;
+
   // Empirical constants for the algorithm.
   float alpha = 0;
   if (HLL_LEN == 16) {
