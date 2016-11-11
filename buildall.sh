@@ -402,7 +402,7 @@ load_test_data() {
   # - Only the test-warehouse snapshot exists.
   # - Only the metastore snapshot exists.
   # - Neither of them exist.
-  local CREATE_LOAD_DATA_ARGS=""
+  local CREATE_LOAD_DATA_ARGS="-exploration_strategy ${EXPLORATION_STRATEGY} "
   if [[ "$SNAPSHOT_FILE" && "$METASTORE_SNAPSHOT_FILE" ]]; then
     CREATE_LOAD_DATA_ARGS="-snapshot_file ${SNAPSHOT_FILE} -skip_metadata_load"
   elif [[ "$SNAPSHOT_FILE" && -z "$METASTORE_SNAPSHOT_FILE" ]]; then
