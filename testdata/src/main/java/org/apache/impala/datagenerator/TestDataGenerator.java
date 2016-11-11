@@ -25,6 +25,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 class TestDataGenerator {
   // 2 years
@@ -151,6 +152,8 @@ class TestDataGenerator {
     if (args.length != 1) {
       System.err.println("Usage: " + "TestDataGenerator BaseOutputDirectory");
     }
+
+    TimeZone.setDefault(TimeZone.getTimeZone("America/Los_Angeles"));
 
     // Generate AllTypes
     String dirName = args[0] + "/AllTypes";
