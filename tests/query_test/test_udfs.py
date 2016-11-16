@@ -143,6 +143,9 @@ class TestUdfs(ImpalaTestSuite):
   def test_libs_with_same_filenames(self, vector, unique_database):
     self.run_test_case('QueryTest/libs_with_same_filenames', vector, use_db=unique_database)
 
+  # Run serially because of IMPALA-4476 and IMPALA-3641, which appear to be race
+  # conditions that cause this test to sometimes fail when run in parallel.
+  @pytest.mark.execute_serially
   def test_udf_update_via_drop(self, vector, unique_database):
     """Test updating the UDF binary without restarting Impala. Dropping
     the function should remove the binary from the local cache."""
@@ -175,6 +178,9 @@ class TestUdfs(ImpalaTestSuite):
     self.execute_query_expect_success(self.client, create_fn_stmt, exec_options)
     self.__run_query_all_impalads(exec_options, query_stmt, ["New UDF"])
 
+  # Run serially because of IMPALA-4476 and IMPALA-3641, which appear to be race
+  # conditions that cause this test to sometimes fail when run in parallel.
+  @pytest.mark.execute_serially
   def test_udf_update_via_create(self, vector, unique_database):
     """Test updating the UDF binary without restarting Impala. Creating a new function
     from the library should refresh the cache."""
@@ -220,6 +226,9 @@ class TestUdfs(ImpalaTestSuite):
     self.__run_query_all_impalads(
         exec_options, query_template.format(old_function_name), ["New UDF"])
 
+  # Run serially because of IMPALA-4476 and IMPALA-3641, which appear to be race
+  # conditions that cause this test to sometimes fail when run in parallel.
+  @pytest.mark.execute_serially
   def test_drop_function_while_running(self, vector):
     self.client.execute("drop function if exists default.drop_while_running(BIGINT)")
     self.client.execute("create function default.drop_while_running(BIGINT) returns "\
