@@ -31,7 +31,7 @@ TEST_IDS = xrange(0, 10)
 # Runs many queries in parallel. The goal is to have this complete in a reasonable amount
 # of time and be run as part of all test runs.
 @pytest.mark.xfail(run=False, reason="IMPALA-2605: the stress tests have a history of "
-                   " causing the end-to-end tests to hang")
+                   "causing the end-to-end tests to hang")
 class TestMiniStress(ImpalaTestSuite):
   @classmethod
   def get_workload(self):
