@@ -29,10 +29,18 @@
 # Set up some logging and exit conditions:
 set -euxo pipefail
 
+# To find an upper bound on the network requirements of this script, check on network
+# bytes transmitted so far:
+ifconfig
+
 # Install dependencies:
 sudo apt-get update
 sudo apt-get --yes install g++ gcc git libsasl2-dev libssl-dev make maven openjdk-7-jdk \
     python-dev python-setuptools
 
+ifconfig
+
 export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64/
 ./buildall.sh -notests -so
+
+ifconfig
