@@ -364,7 +364,6 @@ bool MathFunctions::DecimalInBaseToDecimal(int64_t src_num, int8_t src_base,
   uint64_t temp_result = 0;
   bool overflow = false;
   do {
-    if (UNLIKELY(overflow)) return false;
     uint64_t digit = temp_num % 10;
     // Reset result if digit is not representable in src_base.
     if (digit >= src_base) {
@@ -376,7 +375,7 @@ bool MathFunctions::DecimalInBaseToDecimal(int64_t src_num, int8_t src_base,
         temp_result = Overflow::CheckedSum(temp_result, digit_place, &overflow);
       }
       if (UNLIKELY(overflow)) return false;
-      place = Overflow::CheckedProduct(place, static_cast<uint64_t>(src_base), &overflow);
+      place = place * src_base;
     }
     temp_num /= 10;
   } while (temp_num > 0);

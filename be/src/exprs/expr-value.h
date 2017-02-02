@@ -69,7 +69,7 @@ struct ExprValue {
 
   void Init(const std::string& str) {
     string_data = str;
-    string_val.ptr = string_data.size() ? &string_data[0] : nullptr;
+    string_val.ptr = string_data.empty() ? nullptr : &string_data[0];
     string_val.len = string_data.size();
   }
 

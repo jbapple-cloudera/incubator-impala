@@ -263,34 +263,34 @@ bool HdfsAvroScanner::ReadAvroDecimal(int slot_byte_size, uint8_t** data,
     // Decimals are encoded as big-endian integers. Copy the decimal into the most
     // significant bytes and then shift down to the correct position to sign-extend the
     // decimal.
-    int bytes_to_fill = slot_byte_size - len.val;
+    if (len.val == 0) {
+      memset(slot, 0, slot_byte_size);
+    } else {
+      int bytes_to_fill = slot_byte_size - len.val;
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-    BitUtil::ByteSwap(reinterpret_cast<uint8_t*>(slot) + bytes_to_fill, *data, len.val);
+      BitUtil::ByteSwap(reinterpret_cast<uint8_t*>(slot) + bytes_to_fill, *data, len.val);
 #else
-    memcpy(slot, *data, len.val);
+      memcpy(slot, *data, len.val);
 #endif
-    switch (slot_byte_size) {
-      case 4: {
-        int32_t* decimal = reinterpret_cast<int32_t*>(slot);
-        if (bytes_to_fill < sizeof(*decimal)) {
+      switch (slot_byte_size) {
+        case 4: {
+          int32_t* decimal = reinterpret_cast<int32_t*>(slot);
           *decimal >>= bytes_to_fill * 8;
-        } else {
-          *decimal = 0;
+          break;
         }
-        break;
+        case 8: {
+          int64_t* decimal = reinterpret_cast<int64_t*>(slot);
+          *decimal >>= bytes_to_fill * 8;
+          break;
+        }
+        case 16: {
+          int128_t* decimal = reinterpret_cast<int128_t*>(slot);
+          *decimal >>= bytes_to_fill * 8;
+          break;
+        }
+        default:
+          DCHECK(false) << "Decimal slots can't be this size: " << slot_byte_size;
       }
-      case 8: {
-        int64_t* decimal = reinterpret_cast<int64_t*>(slot);
-        *decimal >>= bytes_to_fill * 8;
-        break;
-      }
-      case 16: {
-        int128_t* decimal = reinterpret_cast<int128_t*>(slot);
-        *decimal >>= bytes_to_fill * 8;
-        break;
-      }
-      default:
-        DCHECK(false) << "Decimal slots can't be this size: " << slot_byte_size;
     }
   }
   *data += len.val;
