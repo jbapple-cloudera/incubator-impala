@@ -47,6 +47,7 @@ LOGGING_ARGS = '--junitxml=%(result_dir)s/TEST-impala-%(log_name)s.xml '\
 NUM_CONCURRENT_TESTS = multiprocessing.cpu_count()
 if 'NUM_CONCURRENT_TESTS' in os.environ:
   NUM_CONCURRENT_TESTS = int(os.environ['NUM_CONCURRENT_TESTS'])
+NUM_CONCURRENT_TESTS = 32
 
 # Default the number of stress clinets to 4x the number of CPUs (but not exceeding the
 # default max # of concurrent connections)
