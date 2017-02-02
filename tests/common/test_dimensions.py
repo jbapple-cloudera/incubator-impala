@@ -111,9 +111,7 @@ def create_parquet_dimension(workload):
 # Common sets of values for the exec option vectors
 ALL_BATCH_SIZES = [0]
 
-# Don't run with NUM_NODES=1 due to IMPALA-561
-# ALL_CLUSTER_SIZES = [0, 1]
-ALL_CLUSTER_SIZES = [0]
+ALL_CLUSTER_SIZES = [0, 1]
 
 SINGLE_NODE_ONLY = [1]
 ALL_NODES_ONLY = [0]
