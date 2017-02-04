@@ -115,7 +115,7 @@ class DecompressorTest : public ::testing::Test {
         compressed, &output_len, &output));
 
     EXPECT_EQ(output_len, input_len);
-    if (input_len) EXPECT_EQ(memcmp(input, output, input_len), 0);
+    if (input_len > 0) EXPECT_EQ(memcmp(input, output, input_len), 0);
 
     // Preallocated output buffers
     int64_t max_compressed_length = compressor->MaxOutputLen(input_len, input);
@@ -137,7 +137,7 @@ class DecompressorTest : public ::testing::Test {
                                            &output_len, &output));
 
     EXPECT_EQ(output_len, input_len);
-    if (input_len) EXPECT_EQ(memcmp(input, output, input_len), 0);
+    if (input_len > 0) EXPECT_EQ(memcmp(input, output, input_len), 0);
   }
 
   void Compress(Codec* compressor, int64_t input_len, uint8_t* input,
@@ -166,7 +166,7 @@ class DecompressorTest : public ::testing::Test {
       int64_t compressed_bytes_read = 0;
       RETURN_IF_ERROR(decompressor->ProcessBlockStreaming(compressed_bytes_remaining,
           compressed_input, &compressed_bytes_read, &output_len, &output, &stream_end));
-      if (output_len) {
+      if (output_len > 0) {
         EXPECT_EQ(
             memcmp(uncompressed_input + decompressed_len, output, output_len),
             0);
@@ -217,7 +217,7 @@ class DecompressorTest : public ::testing::Test {
         &output_len, &output));
 
     EXPECT_EQ(output_len, input_len);
-    if (input_len) EXPECT_EQ(memcmp(input, output, input_len), 0);
+    if (input_len > 0) EXPECT_EQ(memcmp(input, output, input_len), 0);
   }
 
   void RunTestMultiStreamDecompressing(THdfsCompression::type format) {
