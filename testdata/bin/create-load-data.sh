@@ -39,7 +39,8 @@ trap 'echo Error in $0 at line $LINENO: $(cd "'$PWD'" && awk "NR == $LINENO" $0)
 # https://issues.cloudera.org/browse/IMPALA-4346
 : ${HS2_HOST_PORT=localhost:11050}
 : ${HDFS_NN=localhost:20500}
-: ${IMPALAD=localhost:21000}
+: ${IMPALADS=localhost:21000,localhost:21001,localhost:21002}
+IMPALAD="$(echo ${IMPALADS} | cut -d ',' -f 1)"
 : ${REMOTE_LOAD=}
 : ${CM_HOST=}
 
@@ -195,7 +196,7 @@ function load-data {
     fi
   fi
 
-  ARGS+=("--impalad ${IMPALAD}")
+  ARGS+=("--impalads ${IMPALADS}")
   ARGS+=("--hive_hs2_hostport ${HS2_HOST_PORT}")
   ARGS+=("--hdfs_namenode ${HDFS_NN}")
 
@@ -238,7 +239,7 @@ function load-aux-workloads {
   if [ -d ${IMPALA_AUX_WORKLOAD_DIR} ] && [ -d ${IMPALA_AUX_DATASET_DIR} ]; then
     echo Loading auxiliary workloads. Logging to $LOG_FILE.
     if ! impala-python -u ${IMPALA_HOME}/bin/load-data.py --workloads all\
-        --impalad=${IMPALAD}\
+        --impalads=${IMPALADS}\
         --hive_hs2_hostport=${HS2_HOST_PORT}\
         --hdfs_namenode=${HDFS_NN}\
         --workload_dir=${IMPALA_AUX_WORKLOAD_DIR}\

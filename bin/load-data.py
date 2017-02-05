@@ -24,6 +24,7 @@ import collections
 import getpass
 import logging
 import os
+import random
 import re
 import sqlparse
 import subprocess
@@ -57,8 +58,8 @@ parser.add_option("-s", "--scale_factor", dest="scale_factor", default="",
                   help="An optional scale factor to generate the schema for")
 parser.add_option("-f", "--force_reload", dest="force_reload", action="store_true",
                   default=False, help='Skips HDFS exists check and reloads all tables')
-parser.add_option("--impalad", dest="impalad", default="localhost:21000",
-                  help="Impala daemon to connect to")
+parser.add_option("--impalads", dest="impalads", default="localhost:21000",
+                  help="Impala daemons to connect to, comma-separated")
 parser.add_option("--hive_hs2_hostport", dest="hive_hs2_hostport",
                   default="localhost:11050",
                   help="HS2 host:Port to issue Hive queries against using beeline")
@@ -82,6 +83,7 @@ parser.add_option("--principal", default=None, dest="principal",
                   help="Kerberos service principal, required if --use_kerberos is set")
 
 options, args = parser.parse_args()
+impalads = options.impalads.split(',')
 
 SQL_OUTPUT_DIR = os.environ['IMPALA_DATA_LOADING_SQL_DIR']
 WORKLOAD_DIR = options.workload_dir
@@ -152,7 +154,8 @@ def exec_hbase_query_from_file(file_name):
 def exec_impala_query_from_file(file_name):
   """Execute each query in an Impala query file individually"""
   is_success = True
-  impala_client = ImpalaBeeswaxClient(options.impalad, use_kerberos=options.use_kerberos)
+  impalad = random.choice(impalads)
+  impala_client = ImpalaBeeswaxClient(impalad, use_kerberos=options.use_kerberos)
   try:
     impala_client.connect()
     with open(file_name, 'r+') as query_file:
@@ -197,7 +200,7 @@ def generate_schema_statements(workload):
     generate_cmd += " --hive_warehouse_dir=%s" % options.hive_warehouse_dir
   if options.hdfs_namenode is not None:
     generate_cmd += " --hdfs_namenode=%s" % options.hdfs_namenode
-  generate_cmd += " --backend=%s" % options.impalad
+  generate_cmd += " --backend=%s" % random.choice(impalads)
   print 'Executing Generate Schema Command: ' + generate_cmd
   schema_cmd = os.path.join(TESTDATA_BIN_DIR, generate_cmd)
   error_msg = 'Error generating schema statements for workload: ' + workload
@@ -263,13 +266,14 @@ def exec_impala_query_from_file_parallel(query_files):
   for thread in threads: thread.join()
 
 def invalidate_impala_metadata():
-  print "Invalidating Metadata"
-  impala_client = ImpalaBeeswaxClient(options.impalad, use_kerberos=options.use_kerberos)
-  impala_client.connect()
-  try:
-    impala_client.execute('invalidate metadata')
-  finally:
-    impala_client.close_connection()
+  for impalad in impalads:
+    print "Invalidating Metadata"
+    impala_client = ImpalaBeeswaxClient(impalad, use_kerberos=options.use_kerberos)
+    impala_client.connect()
+    try:
+      impala_client.execute('invalidate metadata')
+    finally:
+      impala_client.close_connection()
 
 if __name__ == "__main__":
   # Having the actual command line at the top of each data-load-* log can help
