@@ -1,0 +1,3 @@
+# ios_base masks enums using a & ~b. When ~b is not a valid enum value,
+# this causes a UBSAN error
+enum:ios_base.h
