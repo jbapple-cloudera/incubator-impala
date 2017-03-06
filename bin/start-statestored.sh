@@ -59,4 +59,6 @@ if ${CLUSTER_DIR}/admin is_kerberized; then
   fi
 fi
 
+export UBSAN_OPTIONS='print_stacktrace=1 suppressions=../../../../bin/MyUbSan.supp'
+export PATH="${IMPALA_TOOLCHAIN}/llvm-${IMPALA_LLVM_VERSION}/bin:${PATH}"
 exec ${BINARY_BASE_DIR}/${BUILD_TYPE}/statestore/statestored ${STATESTORED_ARGS}
