@@ -229,9 +229,11 @@ set(CLANG_IR_CXX_FLAGS "-emit-llvm" "-c" "-std=c++14" "-DIR_COMPILE" "-DNDEBUG"
 # -Werror: compile warnings should be errors when using the toolchain compiler.
 set(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-Werror")
 
+set(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-O1")
+
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "UBSAN")
-  set(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-ggdb3" "-fno-omit-frame-pointer"
-    "-fsanitize=undefined" "-fno-wrapv" "-O0"
+  set(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-fno-omit-frame-pointer"
+    "-fsanitize=undefined" "-fno-wrapv" "-ggdb3"
     "-fno-sanitize=alignment,function,vptr,float-divide-by-zero,float-cast-overflow")
 endif()
 
@@ -250,6 +252,10 @@ endif()
   #  -inline: inline with low threshold to get rid of trivial accessor functions.
   set(LLVM_OPT_IR_FLAGS "-inline" "-inlinehint-threshold=10" "-inline-threshold=10")
 endif()
+
+# Flags to pass to LLVM's opt to further optimize cross-compiled IR.
+#  -inline: inline with low threshold to get rid of trivial accessor functions.
+set(LLVM_OPT_IR_FLAGS "-inline" "-inlinehint-threshold=10" "-inline-threshold=10")
 
 # setup doc generation with Doxygen
 find_package(Doxygen)
