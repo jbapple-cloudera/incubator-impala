@@ -18,7 +18,8 @@
 # This file suppresses UBSAN errors, following
 # http://releases.llvm.org/3.8.0/tools/clang/docs/UndefinedBehaviorSanitizer.html#runtime-suppressions
 
-# ios_base.h in libstdc++ 4.9.2 in some places masks enums a and b to create the logical
-# equivalent of (a and no b). It does this using the expression 'a & ~b'. When ~b is not a
-# valid enum value, this causes a UBSAN error. The line below suppresses that error.
+# Some methods in ios_base.h (libstdc++ 4.9.2) mask two values a and b of an enum type to
+# create the logical equivalent of (a and (not b)) using the expression 'a & ~b'. When ~b
+# is not a valid enum member (and it usually isn't), this causes a UBSAN error. The line
+# below suppresses that error.
 enum:ios_base.h
