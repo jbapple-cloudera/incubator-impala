@@ -225,9 +225,15 @@ add_definitions(-DKUDU_HEADERS_USE_SHORT_STATUS_MACROS -DKUDU_HEADERS_USE_RICH_S
 set(CLANG_IR_CXX_FLAGS "-emit-llvm" "-c" "-std=c++14" "-DIR_COMPILE" "-DNDEBUG"
   "-DHAVE_INTTYPES_H" "-DHAVE_NETINET_IN_H" "-DBOOST_DATE_TIME_POSIX_TIME_STD_CONFIG"
   "-DBOOST_NO_EXCEPTIONS" "-fcolor-diagnostics" "-Wno-deprecated"
-  "-Wno-return-type-c-linkage" "-O1")
+  "-Wno-return-type-c-linkage")
 # -Werror: compile warnings should be errors when using the toolchain compiler.
 set(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-Werror")
+
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "UBSAN")
+  set(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-ggdb3" "-fno-omit-frame-pointer"
+    "-fsanitize=undefined" "-fno-wrapv" "-O0"
+    "-fno-sanitize=alignment,function,vptr,float-divide-by-zero,float-cast-overflow")
+endif()
 
 if ("${CMAKE_BUILD_TYPE}" STREQUAL "ADDRESS_SANITIZER")
   SET(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-DADDRESS_SANITIZER")
@@ -240,9 +246,10 @@ IF($ENV{ENABLE_IMPALA_IR_DEBUG_INFO} STREQUAL "true")
   SET(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-g")
 endif()
 
-# Flags to pass to LLVM's opt to further optimize cross-compiled IR.
-#  -inline: inline with low threshold to get rid of trivial accessor functions.
-set(LLVM_OPT_IR_FLAGS "-inline" "-inlinehint-threshold=10" "-inline-threshold=10")
+  # Flags to pass to LLVM's opt to further optimize cross-compiled IR.
+  #  -inline: inline with low threshold to get rid of trivial accessor functions.
+  set(LLVM_OPT_IR_FLAGS "-inline" "-inlinehint-threshold=10" "-inline-threshold=10")
+endif()
 
 # setup doc generation with Doxygen
 find_package(Doxygen)
