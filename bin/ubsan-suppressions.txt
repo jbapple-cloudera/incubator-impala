@@ -1,3 +1,4 @@
-# ios_base masks enums using a & ~b. When ~b is not a valid enum value,
-# this causes a UBSAN error
+# ios_base.h in libstdc++ 4.9.2 in some places masks enums a and b to create the logical
+# equivalent of (a and no b). It does this using the expression 'a & ~b'. When ~b is not a
+# valid enum value, this causes a UBSAN error. The line below suppresses that error.
 enum:ios_base.h
