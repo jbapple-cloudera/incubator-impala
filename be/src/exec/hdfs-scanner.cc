@@ -539,7 +539,7 @@ Status HdfsScanner::CodegenWriteAlignedTuples(const HdfsScanNodeBase* node,
 
   int replaced = codegen->ReplaceCallSites(write_tuples_fn, write_complete_tuple_fn,
       "WriteCompleteTuple");
-  DCHECK_EQ(replaced, 1);
+  DCHECK_REPLACE_COUNT(replaced, 1);
 
   llvm::Function* copy_strings_fn;
   RETURN_IF_ERROR(Tuple::CodegenCopyStrings(

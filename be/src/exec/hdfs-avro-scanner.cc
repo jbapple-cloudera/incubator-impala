@@ -1093,13 +1093,13 @@ Status HdfsAvroScanner::CodegenDecodeAvroData(const HdfsScanNodeBase* node,
   DCHECK_EQ(replaced, 1);
 
   replaced = codegen->ReplaceCallSites(fn, materialize_tuple_fn, "MaterializeTuple");
-  DCHECK_EQ(replaced, 1);
+  DCHECK_REPLACE_COUNT(replaced, 1);
 
   llvm::Function* eval_conjuncts_fn;
   RETURN_IF_ERROR(ExecNode::CodegenEvalConjuncts(codegen, conjuncts, &eval_conjuncts_fn));
 
   replaced = codegen->ReplaceCallSites(fn, eval_conjuncts_fn, "EvalConjuncts");
-  DCHECK_EQ(replaced, 1);
+  DCHECK_REPLACE_COUNT(replaced, 1);
 
   llvm::Function* copy_strings_fn;
   RETURN_IF_ERROR(Tuple::CodegenCopyStrings(

@@ -126,6 +126,7 @@ SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-sanitize=alignment,function,vptr,fl
 SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-wrapv")
 # To ease debugging, turn off all optimizations:
 SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -O0")
+SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -DUBSAN")
 
 # Set the flags to the thread sanitizer, also known as "tsan"
 # Turn on sanitizer and debug symbols to get stack traces:

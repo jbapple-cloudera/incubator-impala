@@ -46,6 +46,13 @@
   #include <gflags/gflags.h>
 #endif
 
+// find be/src -type f  -execdir sed -i s/DCHECK_EQ\(replaced,\ /DCHECK_REPLACE_COUNT\(replaced,\ /g {} \;
+#ifdef UBSAN
+#define DCHECK_REPLACE_COUNT(p, q) DCHECK_GE(p, q); DCHECK_LE(p, 2*(q))
+#else
+#define DCHECK_REPLACE_COUNT(p, q) DCHECK_EQ(p, q)
+#endif
+
 /// Define verbose logging levels.  Per-row logging is more verbase than per-file /
 /// per-rpc logging which is more verbose than per-connection / per-query logging.
 #define VLOG_CONNECTION VLOG(1)
