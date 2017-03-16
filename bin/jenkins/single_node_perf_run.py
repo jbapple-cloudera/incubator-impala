@@ -171,21 +171,24 @@ def build(git_hash):
     sh.git.checkout(git_hash)
 
     # Build backend
-    make_impala = sh.Command("{0}/bin/make_impala.sh".format(impala_home))
-    make_impala("-notests", "-build_type=Release", "-build_static_libs",
-                _out=tee, _err=tee)
+    buildall = sh.Command("{0}/buildall.sh".format(impala_home))
+    buildall("-notests", "-release", _out=tee, _err=tee)
 
-    # External data source
-    os.chdir(os.path.join(os.environ["IMPALA_HOME"], "ext-data-source"))
-    make_ext_dsrc = sh.mvn.bake("clean", "install", "-U", "-DskipTests",
-                                _out=tee, _err=tee)
-    make_ext_dsrc()
+    # make_impala = sh.Command("{0}/bin/make_impala.sh".format(impala_home))
+    # make_impala("-notests", "-build_type=Release", "-build_static_libs",
+    #             _out=tee, _err=tee)
 
-    # Build frontend
-    os.chdir(os.path.join(os.environ["IMPALA_HOME"], "fe"))
-    make_frontend = sh.mvn.bake("clean", "install", "-U", "-DskipTests",
-                                _out=tee, _err=tee)
-    make_frontend()
+    # # External data source
+    # os.chdir(os.path.join(os.environ["IMPALA_HOME"], "ext-data-source"))
+    # make_ext_dsrc = sh.mvn.bake("clean", "install", "-U", "-DskipTests",
+    #                             _out=tee, _err=tee)
+    # make_ext_dsrc()
+
+    # # Build frontend
+    # os.chdir(os.path.join(os.environ["IMPALA_HOME"], "fe"))
+    # make_frontend = sh.mvn.bake("clean", "install", "-U", "-DskipTests",
+    #                             _out=tee, _err=tee)
+    # make_frontend()
     logger.info("Build finished.")
 
 
