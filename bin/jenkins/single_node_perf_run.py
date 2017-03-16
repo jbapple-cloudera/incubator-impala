@@ -194,6 +194,8 @@ def build(git_hash):
 
 def start_dependent_services(num_impalads, start_other_services):
     """Will start all dependent Hadoop services and the Impala mini cluster."""
+    create_test_config = sh.Command("{0}/bin/create-test-configuration.sh".format(
+      impala_home)).bake(_out=sys.stdout, _err=sys.stderr)
     run_all = sh.Command("{0}/testdata/bin/run-all.sh".format(
             impala_home)).bake(_out=sys.stdout, _err=sys.stderr)
 
@@ -202,6 +204,7 @@ def start_dependent_services(num_impalads, start_other_services):
 
     if start_other_services:
         logger.info("Starting services")
+        create_test_config()
         services = run_all(_bg=True)
         logger.info("Waiting for services to become available.")
         services.wait()
