@@ -92,8 +92,6 @@ SET(CXX_FLAGS_ADDRESS_SANITIZER
 SET(CXX_FLAGS_UBSAN "${CXX_CLANG_FLAGS} -ggdb3 -fno-omit-frame-pointer -fsanitize=undefined")
 # Add flags to enable symbol resolution in the stack traces:
 SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -rtlib=compiler-rt -lgcc_s")
-# Ignore a number of noisy errors with too many false positives:
-SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-sanitize=alignment,function,vptr,float-divide-by-zero,float-cast-overflow")
 # Don't enforce wrapped signed integer arithmetic so that the sanitizer actually sees
 # undefined wrapping:
 SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-wrapv")
