@@ -177,7 +177,7 @@ def build(git_hash):
 
     # Build backend
     buildall = sh.Command("{0}/buildall.sh".format(impala_home))
-    buildall("-notests", "-release", _out=tee, _err=tee)
+    buildall("-notests", "-release", _out=sys.stdout, _err=sys.stderr)
 
     # make_impala = sh.Command("{0}/bin/make_impala.sh".format(impala_home))
     # make_impala("-notests", "-build_type=Release", "-build_static_libs",
