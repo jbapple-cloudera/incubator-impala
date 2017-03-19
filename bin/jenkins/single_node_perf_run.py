@@ -208,8 +208,9 @@ def start_dependent_services(num_impalads, start_other_services):
             impala_home)).bake(_out=tee, _err=tee)
 
     if start_other_services:
-        logger.info("Starting services")
+        logger.info("Creating test configuration")
         create_test_config()
+        logger.info("Starting services")
         services = run_all(_bg=True)
         logger.info("Waiting for services to become available.")
         services.wait()
