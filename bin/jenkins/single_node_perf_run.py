@@ -114,6 +114,11 @@ def load_tpch_data(scale=10):
     they do not work locally."""
     logger.info("Preparing to generate TPC-H SF {0}".format(scale))
     os.chdir(impala_home)
+    load = sh.Command("{0}/bin/load-data.py".format(impala_home))
+    load("--workloads", "tpch", "--scale_factor", str(scale), _out=sys.stdout,
+         _err=sys.stderr)
+    logger.info("Data load complete")
+    return
 
     # Check if generator directory exists
     if os.path.isdir("TPC-DS-master"):
