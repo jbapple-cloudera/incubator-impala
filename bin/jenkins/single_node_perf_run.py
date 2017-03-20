@@ -115,7 +115,7 @@ def load_tpch_data(scale=10):
     logger.info("Preparing to generate TPC-H SF {0}".format(scale))
     os.chdir(impala_home)
     load = sh.Command("{0}/bin/load-data.py".format(impala_home))
-    load("--workloads", "tpch", "--scale_factor", str(scale), _out=sys.stdout,
+    load("--workloads", "tpch", "--scale_factor", str(scale), _out=tee,
          _err=sys.stderr)
     logger.info("Data load complete")
     return
