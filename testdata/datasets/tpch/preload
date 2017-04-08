@@ -47,7 +47,7 @@ rm -rf ${TPC_H_DATA}
 mkdir -p ${TPC_H_DATA}
 cd ${TPC_H_DATA}
 
-${TPC_H_DBGEN} -v -f -s ${SCALE_FACTOR}
+${TPC_H_DBGEN} -f -s ${SCALE_FACTOR}
 # Impala expects each table to be in its own subdirectory.
 for FILE in *.tbl; do
   FILE_DIR=${FILE%.tbl}
