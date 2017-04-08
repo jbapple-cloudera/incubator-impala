@@ -166,8 +166,7 @@ def load_tpch_data(table_formats, scale=10):
 def get_git_hash_for_name(name):
     return sh.git("rev-parse", name).strip()
 
-
-def build(git_hash):
+def build(git_hash, first_time):
     """Builds Impala in release mode without tests and loads the latest metastore
     snapshot. The snapshot is primarily used to have some data for tpc-ds or tpc-h
     available."""
@@ -176,10 +175,13 @@ def build(git_hash):
     sh.git.checkout(git_hash)
 
     # Build backend
-    buildall = sh.Command("{0}/buildall.sh".format(impala_home))
-    buildall("-notests", "-release", "-start_minicluster", "-start_impala_cluster",
-             "-format_metastore", "-format_sentry_policy_db",
-             _out=sys.stdout, _err=sys.stderr)
+    buildall = sh.Command("{0}/buildall.sh".format(impala_home)).bake("-notests",
+        "-release", "-start_impala_cluster", _out=sys.stdout, _err=sys.stderr)
+    if (first_time):
+      buildall("-start_minicluster", "-format_metastore", "-format_sentry_policy_db")
+    else:
+      buildall()
+
 
     # make_impala = sh.Command("{0}/bin/make_impala.sh".format(impala_home))
     # make_impala("-notests", "-build_type=Release", "-build_static_libs",
@@ -230,7 +232,7 @@ def run_workload(base_dir, workload, options):
     logger.info("Start running workload {0} - {1}".format(workload, git_hash))
 
     run_workload = sh.Command("{0}/bin/run-workload.py".format(
-            impala_home)).bake(_out=tee, _err=tee)
+            impala_home)).bake(_out=sys.stdout, _err=sys.stderr)
     #if options.scale > 1:
     #    workload = "{0}:{1}".format(workload, options.scale)
 
@@ -251,6 +253,7 @@ def run_workload(base_dir, workload, options):
     if options.query_filter:
         run_workload = run_workload.bake("--query_names={0}".format(options.query_filter))
 
+    logger.info("About to run {0}".format(run_workload))
     run_workload()
     logger.info(
         "Workload run complete: {0}.json".format(os.path.join(base_dir, git_hash)))
@@ -382,7 +385,7 @@ def main():
 
     # Check if build is required
     if options.build:
-        build(hash_base)
+        build(hash_base, True)
         restore_workloads(workload_dir)
     start_dependent_services(options.num_impalads, options.start_other_services)
 
@@ -401,7 +404,7 @@ def main():
     # If no build is required, it does not make sense to execute the same
     # workload again, so skip this section.
     if options.build:
-        build(hash_ref)
+        build(hash_ref, False)
         restore_workloads(workload_dir)
         start_dependent_services(options.num_impalads, options.start_other_services)
         run_workload(temp_dir, workload_name, options)
