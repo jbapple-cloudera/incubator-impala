@@ -175,10 +175,11 @@ def build(git_hash, first_time):
     sh.git.checkout(git_hash)
 
     # Build backend
-    buildall = sh.Command("{0}/buildall.sh".format(impala_home)).bake("-notests",
-        "-release", "-noclean"
-                                                                      #"-start_impala_cluster",
-       _out=sys.stdout, _err=sys.stderr)
+    buildall = sh.Command("{0}/buildall.sh".format(impala_home))
+    buildall..bake("-notests",
+                   "-release", "-noclean",
+                   #"-start_impala_cluster",
+                   _out=sys.stdout, _err=sys.stderr)
     if (first_time):
       buildall(#"-start_minicluster",
         #"-format_metastore", "-format_sentry_policy_db"
