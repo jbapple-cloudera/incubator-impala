@@ -176,7 +176,7 @@ def build(git_hash, first_time):
 
     # Build backend
     buildall = sh.Command("{0}/buildall.sh".format(impala_home))
-    buildall.bake("-notests",
+    buildall = buildall.bake("-notests",
                    "-release", "-noclean",
                    #"-start_impala_cluster",
                    _out=sys.stdout, _err=sys.stderr)
