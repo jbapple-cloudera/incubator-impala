@@ -231,6 +231,8 @@ def run_workload(base_dir, workload, options):
 
     run_workload = sh.Command("{0}/bin/run-workload.py".format(
             impala_home)).bake(_out=tee, _err=tee)
+    if options.scale > 1:
+        workload = "{0}:{1}".format(workload, options.scale)
 
     run_workload = run_workload.bake("--client_type=beeswax",
                                      "--workloads={0}".format(workload),
