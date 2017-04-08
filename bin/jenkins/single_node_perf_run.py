@@ -205,21 +205,21 @@ def build(git_hash, first_time):
 
 def start_dependent_services(num_impalads, start_other_services):
     """Will start all dependent Hadoop services and the Impala mini cluster."""
-    # create_test_config = sh.Command("{0}/bin/create-test-configuration.sh".format(
-    #   impala_home)).bake(_out=sys.stdout, _err=sys.stderr)
-    # run_all = sh.Command("{0}/testdata/bin/run-all.sh".format(
-    #         impala_home)).bake(_out=sys.stdout, _err=sys.stderr)
+    create_test_config = sh.Command("{0}/bin/create-test-configuration.sh".format(
+      impala_home)).bake(_out=sys.stdout, _err=sys.stderr)
+    run_all = sh.Command("{0}/testdata/bin/run-all.sh".format(
+            impala_home)).bake(_out=sys.stdout, _err=sys.stderr)
 
     impala_cluster = sh.Command("{0}/bin/start-impala-cluster.py".format(
             impala_home)).bake(_out=tee, _err=tee)
 
-    # if start_other_services:
-    #     logger.info("Creating test configuration")
-    #     create_test_config()
-    #     logger.info("Starting services")
-    #     services = run_all(_bg=True)
-    #     logger.info("Waiting for services to become available.")
-    #     services.wait()
+    if start_other_services:
+        logger.info("Creating test configuration")
+        create_test_config()
+        logger.info("Starting services")
+        services = run_all(_bg=True)
+        logger.info("Waiting for services to become available.")
+        services.wait()
 
     logger.info("Starting Impala cluster")
     cluster = impala_cluster("--build_type=release", s=num_impalads, _bg=True)
@@ -408,7 +408,7 @@ def main():
     if options.build:
         build(hash_ref, False)
         restore_workloads(workload_dir)
-        start_dependent_services(options.num_impalads, options.start_other_services)
+        start_dependent_services(options.num_impalads, False)#options.start_other_services)
         run_workload(temp_dir, workload_name, options)
         compare(temp_dir, hash_base, hash_ref)
         sh.cat(os.path.join(impala_home, "performance_result.txt"), _out=tee, _err=tee)
