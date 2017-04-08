@@ -108,15 +108,15 @@ def tee(line):
     logger.debug(line.strip())
 
 
-def load_tpch_data(scale=10):
+def load_tpch_data(table_formats, scale=10):
     """Loads TPC-H with a particular scale factor. The below code models the scripts
     in the TPC-DS repository. Since these scripts are tailored for a managed cluster
     they do not work locally."""
     logger.info("Preparing to generate TPC-H SF {0}".format(scale))
     os.chdir(impala_home)
     load = sh.Command("{0}/bin/load-data.py".format(impala_home))
-    load("--workloads", "tpch", "--scale_factor", str(scale), _out=tee,
-         _err=sys.stderr)
+    load("--workloads", "tpch", "--scale_factor", str(scale), "--table_formats",
+         "text/none," + table_formats, _out=sys.stdout, _err=sys.stderr)
     logger.info("Data load complete")
     return
 
@@ -231,8 +231,8 @@ def run_workload(base_dir, workload, options):
 
     run_workload = sh.Command("{0}/bin/run-workload.py".format(
             impala_home)).bake(_out=tee, _err=tee)
-    if options.scale > 1:
-        workload = "{0}:{1}".format(workload, options.scale)
+    #if options.scale > 1:
+    #    workload = "{0}:{1}".format(workload, options.scale)
 
     run_workload = run_workload.bake("--client_type=beeswax",
                                      "--workloads={0}".format(workload),
@@ -388,13 +388,13 @@ def main():
 
     # Check if data needs to be loaded
     if options.workload in ("tpch", "targeted-perf") and options.load:
-        load_tpch_data(options.scale)
+        load_tpch_data(options.table_formats, options.scale)
 
     # If no test execution is required, the only logical option is to exit here.
     if options.no_perf: return
 
     workload_name = options.workload
-    if options.scale: workload_name += ":_{0}".format(options.scale)
+    if options.scale: workload_name += ":{0}".format(options.scale)
 
     run_workload(temp_dir, workload_name, options)
 
