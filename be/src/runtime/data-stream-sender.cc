@@ -441,7 +441,7 @@ Status DataStreamSender::Send(RuntimeState* state, RowBatch* batch) {
     current_channel_idx_ = (current_channel_idx_ + 1) % channels_.size();
   } else {
     // hash-partition batch's rows across channels
-    int num_channels = channels_.size();
+    const uint64_t num_channels = channels_.size();
     for (int i = 0; i < batch->num_rows(); ++i) {
       TupleRow* row = batch->GetRow(i);
       uint32_t hash_val = HashUtil::FNV_SEED;
@@ -456,7 +456,8 @@ Status DataStreamSender::Send(RuntimeState* state, RowBatch* batch) {
             RawValue::GetHashValueFnv(partition_val, ctx->root()->type(), hash_val);
       }
       ExprContext::FreeLocalAllocations(partition_expr_ctxs_);
-      RETURN_IF_ERROR(channels_[hash_val % num_channels]->AddRow(row));
+      RETURN_IF_ERROR(
+          channels_[(static_cast<uint64_t>(hash_val) * num_channels) >> 32]->AddRow(row));
     }
   }
   COUNTER_ADD(total_sent_rows_counter_, batch->num_rows());
