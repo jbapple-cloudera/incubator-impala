@@ -17,18 +17,19 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Usage: single_node_perf_run.py [options] git_hash_A [git_hash_B]
+# Usage:
+# single_node_perf_run.py [options] git_hash_A [git_hash_B]
 #
-# Compares the performance of Impala at two git hashes on
-# some standard benchmarks. Output is in
+# When one hash is given, measures the performance on the specified workloads.
+# When two hashes are given, compares their performance. Output is in
 # $IMPALA_HOME/perf_results/latest.
 #
-# WARNING: This script will run git checkout. You should not touch
-# the tree while the script is running. You should start the script
-# from a clean git tree.
+# WARNING: This script will run git checkout. You should not touch the tree
+# while the script is running. You should start the script from a clean git
+# tree.
 #
-# WARNING: Unless --no_load is used, this script calls load_data.py
-# which can overwrite your TPC-H and TPC-DS data.
+# WARNING: When --load is used, this script calls load_data.py which can
+# overwrite your TPC-H and TPC-DS data.
 #
 # Options:
 #   -h, --help            show this help message and exit
@@ -47,9 +48,8 @@
 #                         comma-separated list of regular expressions. A query
 #                         is executed if it matches any regular expression in
 #                         this list
-#   --no_load             use already-present workload databases
-#   --no_start_minicluster
-#                         use already-running minicluster
+#   --load                load databases for the chosen workloads
+#   --start_minicluster   start a new Hadoop minicluster
 #   --ninja               use ninja, rather than Make, as the build tool
 
 from optparse import OptionParser
@@ -60,6 +60,7 @@ import os
 import sh
 import subprocess
 import sys
+import textwrap
 
 from tests.common.test_dimensions import TableFormatInfo
 
@@ -68,7 +69,6 @@ IMPALA_HOME = os.environ["IMPALA_HOME"]
 
 def load_data(db_to_load, table_formats, scale):
   """Loads a database with a particular scale factor."""
-  os.chdir(IMPALA_HOME)
   subprocess.check_call(["{0}/bin/load-data.py".format(IMPALA_HOME),
                          "--workloads", db_to_load, "--scale_factor", str(scale),
                          "--table_formats", "text/none," + table_formats])
@@ -84,7 +84,6 @@ def get_git_hash_for_name(name):
 
 def build(git_hash, options):
   """Builds Impala in release mode; doesn't build tests."""
-  os.chdir(IMPALA_HOME)
   sh.git.checkout(git_hash)
   buildall = ["{0}/buildall.sh".format(IMPALA_HOME), "-notests", "-release", "-noclean"]
   if options.ninja:
@@ -107,7 +106,7 @@ def run_workload(base_dir, workloads, options):
 
   Returns the git hash of the current revision to identify the output file.
   """
-  git_hash = sh.git("rev-parse", "HEAD").strip()
+  git_hash = get_git_hash_for_name("HEAD")
 
   run_workload = ["{0}/bin/run-workload.py".format(IMPALA_HOME)]
 
@@ -236,8 +235,8 @@ def perf_ab_test(options, args):
     compare(temp_dir, hash_a, hash_b)
 
 
-def main():
-  """A thin wrapper around perf_ab_test that restores git state after."""
+def parse_options():
+  """Parse and return the options and positional arguments."""
   parser = OptionParser()
   parser.add_option("--workloads", default="targeted-perf",
                     help="comma-separated list of workloads. Choices: tpch, "
@@ -251,29 +250,39 @@ def main():
   parser.add_option("--query_names",
                     help="comma-separated list of regular expressions. A query is "
                     "executed if it matches any regular expression in this list")
-  parser.add_option("--no_load", dest="load", action="store_false", default=True,
-                    help="use already-present workload databases")
-  parser.add_option("--no_start_minicluster", dest="start_minicluster",
-                    action="store_false", default=True,
-                    help="use already-running minicluster")
+  parser.add_option("--load", action="store_true",
+                    help="load databases for the chosen workloads")
+  parser.add_option("--start_minicluster", action="store_true",
+                    help="start a new Hadoop minicluster")
   parser.add_option("--ninja", action="store_true",
                     help = "use ninja, rather than Make, as the build tool")
 
-  parser.set_usage("single_node_perf_run.py [options] git_hash_A [git_hash_B]\n\n"
-                   "Compares the performance of Impala at two git hashes on\n"
-                   "some standard benchmarks. Output is in\n"
-                   "$IMPALA_HOME/perf_results/latest.\n\n"
-                   "WARNING: This script will run git checkout. You should not touch\n"
-                   "the tree while the script is running. You should start the script\n"
-                   "from a clean git tree.\n\n"
-                   "WARNING: Unless --no_load is used, this script calls load_data.py\n"
-                   "which can overwrite your TPC-H and TPC-DS data.")
+  parser.set_usage(textwrap.dedent("""
+    single_node_perf_run.py [options] git_hash_A [git_hash_B]
+
+    When one hash is given, measures the performance on the specified workloads.
+    When two hashes are given, compares their performance. Output is in
+    $IMPALA_HOME/perf_results/latest.
+
+    WARNING: This script will run git checkout. You should not touch the tree
+    while the script is running. You should start the script from a clean git
+    tree.
+
+    WARNING: When --load is used, this script calls load_data.py which can
+    overwrite your TPC-H and TPC-DS data."""))
 
   options, args = parser.parse_args()
 
   if not 1 <= len(args) <= 2:
     parser.print_usage(sys.stderr)
     raise Exception("Invalid arguments: either 1 or 2 Git hashes allowed")
+
+  return options, args
+
+
+def main():
+  """A thin wrapper around perf_ab_test that restores git state after."""
+  options, args = parse_options()
 
   os.chdir(IMPALA_HOME)
 
@@ -293,4 +302,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+  main()
