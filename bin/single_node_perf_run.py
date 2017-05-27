@@ -98,7 +98,7 @@ def start_minicluster():
 
 def start_impala(num_impalads):
   subprocess.check_call(["{0}/bin/start-impala-cluster.py".format(IMPALA_HOME), "-s",
-                         str(num_impalads)])
+                         str(num_impalads), "-c", str(num_impalads)])
 
 
 def run_workload(base_dir, workloads, options):
