@@ -642,7 +642,7 @@ StringVal StringFunctions::RegexpExtract(FunctionContext* context, const StringV
   // TODO: fix this
   vector<re2::StringPiece> matches(max_matches);
   bool success =
-      re->Match(str_sp, 0, str.len, re2::RE2::UNANCHORED, &matches[0], max_matches);
+      re->Match(str_sp, 0, str.len, re2::RE2::UNANCHORED, matches.data(), max_matches);
   if (!success) return StringVal();
   // matches[0] is the whole string, matches[1] the first group, etc.
   const re2::StringPiece& match = matches[index.val];

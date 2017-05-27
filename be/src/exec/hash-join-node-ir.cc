@@ -52,10 +52,10 @@ int HashJoinNode::ProcessProbeBatch(RowBatch* out_batch, RowBatch* probe_batch,
   int rows_returned = 0;
   int probe_rows = probe_batch->num_rows();
 
-  ExprContext* const* other_conjunct_ctxs = &other_join_conjunct_ctxs_[0];
+  ExprContext* const* other_conjunct_ctxs = other_join_conjunct_ctxs_.data();
   const int num_other_conjunct_ctxs = other_join_conjunct_ctxs_.size();
 
-  ExprContext* const* conjunct_ctxs = &conjunct_ctxs_[0];
+  ExprContext* const* conjunct_ctxs = conjunct_ctxs_.data();
   const int num_conjunct_ctxs = conjunct_ctxs_.size();
 
   while (true) {

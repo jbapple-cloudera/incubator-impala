@@ -96,7 +96,8 @@ class TupleRowComparator {
   int ALWAYS_INLINE Compare(const TupleRow* lhs, const TupleRow* rhs) const {
     return codegend_compare_fn_ == NULL ?
         CompareInterpreted(lhs, rhs) :
-        (*codegend_compare_fn_)(&key_expr_ctxs_lhs_[0], &key_expr_ctxs_rhs_[0], lhs, rhs);
+        (*codegend_compare_fn_)(
+            key_expr_ctxs_lhs_.data(), key_expr_ctxs_rhs_.data(), lhs, rhs);
   }
 
   /// Returns true if lhs is strictly less than rhs.

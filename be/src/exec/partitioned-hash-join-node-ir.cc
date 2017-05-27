@@ -363,9 +363,9 @@ int PartitionedHashJoinNode::ProcessProbeBatch(TPrefetchMode::type prefetch_mode
     RowBatch* out_batch, HashTableCtx* __restrict__ ht_ctx, Status* __restrict__ status) {
   DCHECK(state_ == PARTITIONING_PROBE || state_ == PROBING_SPILLED_PARTITION
       || state_ == REPARTITIONING_PROBE);
-  ExprContext* const* other_join_conjunct_ctxs = &other_join_conjunct_ctxs_[0];
+  ExprContext* const* other_join_conjunct_ctxs = other_join_conjunct_ctxs_.data();
   const int num_other_join_conjuncts = other_join_conjunct_ctxs_.size();
-  ExprContext* const* conjunct_ctxs = &conjunct_ctxs_[0];
+  ExprContext* const* conjunct_ctxs = conjunct_ctxs_.data();
   const int num_conjuncts = conjunct_ctxs_.size();
 
   DCHECK(!out_batch->AtCapacity());

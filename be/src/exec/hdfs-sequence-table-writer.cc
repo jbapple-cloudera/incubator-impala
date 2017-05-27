@@ -185,7 +185,8 @@ Status HdfsSequenceTableWriter::WriteCompressedBlock() {
   {
     SCOPED_TIMER(parent_->compress_timer());
     RETURN_IF_ERROR(compressor_->ProcessBlock(false, key_lengths_text.size(),
-        reinterpret_cast<uint8_t*>(&key_lengths_text[0]), &output_length, &output));
+        reinterpret_cast<const uint8_t*>(key_lengths_text.data()), &output_length,
+        &output));
   }
   record.WriteVInt(output_length);
   record.WriteBytes(output_length, output);
@@ -197,7 +198,7 @@ Status HdfsSequenceTableWriter::WriteCompressedBlock() {
   {
     SCOPED_TIMER(parent_->compress_timer());
     RETURN_IF_ERROR(compressor_->ProcessBlock(false, keys_text.size(),
-        reinterpret_cast<uint8_t*>(&keys_text[0]), &output_length, &output));
+        reinterpret_cast<const uint8_t*>(keys_text.data()), &output_length, &output));
   }
   record.WriteVInt(output_length);
   record.WriteBytes(output_length, output);
@@ -207,7 +208,7 @@ Status HdfsSequenceTableWriter::WriteCompressedBlock() {
   {
     SCOPED_TIMER(parent_->compress_timer());
     RETURN_IF_ERROR(compressor_->ProcessBlock(false, value_lengths_text.size(),
-        reinterpret_cast<uint8_t*>(&value_lengths_text[0]), &output_length, &output));
+        reinterpret_cast<const uint8_t*>(value_lengths_text.data()), &output_length, &output));
   }
   record.WriteVInt(output_length);
   record.WriteBytes(output_length, output);
@@ -217,7 +218,7 @@ Status HdfsSequenceTableWriter::WriteCompressedBlock() {
   {
     SCOPED_TIMER(parent_->compress_timer());
     RETURN_IF_ERROR(compressor_->ProcessBlock(false, text.size(),
-        reinterpret_cast<uint8_t*>(&text[0]), &output_length, &output));
+        reinterpret_cast<const uint8_t*>(text.data()), &output_length, &output));
   }
   record.WriteVInt(output_length);
   record.WriteBytes(output_length, output);
@@ -299,7 +300,7 @@ inline Status HdfsSequenceTableWriter::ConsumeRow(TupleRow* row) {
     {
       SCOPED_TIMER(parent_->compress_timer());
       RETURN_IF_ERROR(compressor_->ProcessBlock(false, text.size(),
-          reinterpret_cast<uint8_t*>(&text[0]), &value_length, &tmp));
+          reinterpret_cast<const uint8_t*>(text.data()), &value_length, &tmp));
     }
     value_bytes = tmp;
   } else {

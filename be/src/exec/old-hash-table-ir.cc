@@ -30,11 +30,11 @@ uint8_t* OldHashTable::expr_value_null_bits() const {
 }
 
 ExprContext* const* OldHashTable::build_expr_ctxs() const {
-  return &build_expr_ctxs_[0];
+  return build_expr_ctxs_.data();
 }
 
 ExprContext* const* OldHashTable::probe_expr_ctxs() const {
-  return &probe_expr_ctxs_[0];
+  return probe_expr_ctxs_.data();
 }
 
 }

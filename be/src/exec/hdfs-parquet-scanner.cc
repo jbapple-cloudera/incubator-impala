@@ -567,7 +567,7 @@ Status HdfsParquetScanner::EvaluateStatsConjuncts(
   if (!min_max_conjuncts_ctxs_to_eval_.empty()) {
     TupleRow row;
     row.SetTuple(0, min_max_tuple);
-    if (!ExecNode::EvalConjuncts(&min_max_conjuncts_ctxs_to_eval_[0],
+    if (!ExecNode::EvalConjuncts(min_max_conjuncts_ctxs_to_eval_.data(),
           min_max_conjuncts_ctxs_to_eval_.size(), &row)) {
       *skip_row_group = true;
     }
@@ -1226,7 +1226,7 @@ bool HdfsParquetScanner::AssembleCollection(
       end_of_collection = column_readers[0]->rep_level() <= new_collection_rep_level;
 
       if (materialize_tuple) {
-        if (ExecNode::EvalConjuncts(&conjunct_ctxs[0], conjunct_ctxs.size(), row)) {
+        if (ExecNode::EvalConjuncts(conjunct_ctxs.data(), conjunct_ctxs.size(), row)) {
           tuple = next_tuple(tuple_desc->byte_size(), tuple);
           ++num_to_commit;
         }
