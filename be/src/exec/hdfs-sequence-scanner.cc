@@ -268,11 +268,11 @@ Status HdfsSequenceScanner::ProcessDecompressedBlock() {
         delimited_text_parser_->escape_char() == '\0');
     // last argument: seq always starts at record_location[0]
     tuples_returned = write_tuples_fn_(this, pool, tuple_row,
-        batch_->row_byte_size(), &field_locations_[0], num_to_process,
+        batch_->row_byte_size(), field_locations_.data(), num_to_process,
         max_added_tuples, scan_node_->materialized_slots().size(), 0);
   } else {
     tuples_returned = WriteAlignedTuples(pool, tuple_row,
-        batch_->row_byte_size(), &field_locations_[0], num_to_process,
+        batch_->row_byte_size(), field_locations_.data(), num_to_process,
         max_added_tuples, scan_node_->materialized_slots().size(), 0);
   }
 
@@ -321,17 +321,17 @@ Status HdfsSequenceScanner::ProcessRange() {
 
       RETURN_IF_ERROR(delimited_text_parser_->ParseFieldLocations(
           1, record_locations_[0].len, reinterpret_cast<char**>(&record_start),
-          &row_end_loc, &field_locations_[0], &num_tuples, &num_fields, &col_start));
+          &row_end_loc, field_locations_.data(), &num_tuples, &num_fields, &col_start));
       DCHECK(num_tuples == 1);
 
       uint8_t errors[num_fields];
       memset(errors, 0, num_fields);
 
-      add_row = WriteCompleteTuple(pool, &field_locations_[0], tuple_, tuple_row_mem,
+      add_row = WriteCompleteTuple(pool, field_locations_.data(), tuple_, tuple_row_mem,
           template_tuple_, &errors[0], &error_in_row);
 
       if (UNLIKELY(error_in_row)) {
-        ReportTupleParseError(&field_locations_[0], errors);
+        ReportTupleParseError(field_locations_.data(), errors);
         RETURN_IF_ERROR(parse_status_);
       }
     } else {

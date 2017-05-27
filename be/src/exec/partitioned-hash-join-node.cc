@@ -668,7 +668,7 @@ Status PartitionedHashJoinNode::OutputAllBuild(RowBatch* out_batch) {
   // it is done by the loop in GetNext(). So, there must be exactly one partition in
   // 'output_build_partitions_' here.
   DCHECK_EQ(output_build_partitions_.size(), 1);
-  ExprContext* const* conjunct_ctxs = &conjunct_ctxs_[0];
+  ExprContext* const* conjunct_ctxs = conjunct_ctxs_.data();
   const int num_conjuncts = conjunct_ctxs_.size();
   RowBatch::Iterator out_batch_iterator(out_batch, out_batch->num_rows());
 
@@ -708,7 +708,7 @@ Status PartitionedHashJoinNode::OutputAllBuild(RowBatch* out_batch) {
 }
 
 Status PartitionedHashJoinNode::OutputUnmatchedBuildFromHashTable(RowBatch* out_batch) {
-  ExprContext* const* conjunct_ctxs = &conjunct_ctxs_[0];
+  ExprContext* const* conjunct_ctxs = conjunct_ctxs_.data();
   const int num_conjuncts = conjunct_ctxs_.size();
   RowBatch::Iterator out_batch_iterator(out_batch, out_batch->num_rows());
 
@@ -895,7 +895,7 @@ Status PartitionedHashJoinNode::OutputNullAwareProbeRows(RuntimeState* state,
   DCHECK(null_aware_probe_partition_ != NULL);
   DCHECK(nulls_build_batch_ != NULL);
 
-  ExprContext* const* join_conjunct_ctxs = &other_join_conjunct_ctxs_[0];
+  ExprContext* const* join_conjunct_ctxs = other_join_conjunct_ctxs_.data();
   int num_join_conjuncts = other_join_conjunct_ctxs_.size();
   DCHECK(probe_batch_ != NULL);
 
@@ -1006,7 +1006,7 @@ Status PartitionedHashJoinNode::EvaluateNullProbe(BufferedTupleStream* build) {
   RETURN_IF_ERROR(null_probe_rows_->GetRows(&probe_rows, &got_rows));
   if (!got_rows) return NullAwareAntiJoinError(false);
 
-  ExprContext* const* join_conjunct_ctxs = &other_join_conjunct_ctxs_[0];
+  ExprContext* const* join_conjunct_ctxs = other_join_conjunct_ctxs_.data();
   int num_join_conjuncts = other_join_conjunct_ctxs_.size();
 
   DCHECK_LE(probe_rows->num_rows(), matched_null_probe_.size());

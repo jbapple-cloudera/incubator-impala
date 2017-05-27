@@ -224,7 +224,7 @@ Status KuduScanner::DecodeRowsIntoRowBatch(RowBatch* row_batch, Tuple** tuple_me
     // Evaluate the conjuncts that haven't been pushed down to Kudu. Conjunct evaluation
     // is performed directly on the Kudu tuple because its memory layout is identical to
     // Impala's. We only copy the surviving tuples to Impala's output row batch.
-    if (has_conjuncts && !ExecNode::EvalConjuncts(&conjunct_ctxs_[0],
+    if (has_conjuncts && !ExecNode::EvalConjuncts(conjunct_ctxs_.data(),
         conjunct_ctxs_.size(), reinterpret_cast<TupleRow*>(&kudu_tuple))) {
       continue;
     }

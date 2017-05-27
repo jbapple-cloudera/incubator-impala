@@ -33,7 +33,7 @@ ExprContext* const* PartitionedAggregationNode::GetAggExprContexts(int i) const 
 Status PartitionedAggregationNode::ProcessBatchNoGrouping(RowBatch* batch) {
   Tuple* output_tuple = singleton_output_tuple_;
   FOREACH_ROW(batch, 0, batch_iter) {
-    UpdateTuple(&agg_fn_ctxs_[0], output_tuple, batch_iter.Get());
+    UpdateTuple(agg_fn_ctxs_.data(), output_tuple, batch_iter.Get());
   }
   return Status::OK();
 }
@@ -206,7 +206,7 @@ Status PartitionedAggregationNode::ProcessBatchStreaming(bool needs_serialize,
           DCHECK(!process_batch_status_.ok());
           return std::move(process_batch_status_);
         }
-        UpdateTuple(&agg_fn_ctxs_[0], intermediate_tuple, in_row);
+        UpdateTuple(agg_fn_ctxs_.data(), intermediate_tuple, in_row);
         out_batch_iterator.Get()->SetTuple(0, intermediate_tuple);
         out_batch_iterator.Next();
         out_batch->CommitLastRow();

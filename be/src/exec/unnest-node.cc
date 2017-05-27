@@ -144,7 +144,7 @@ Status UnnestNode::GetNext(RuntimeState* state, RowBatch* row_batch, bool* eos) 
     TupleRow* row = row_batch->GetRow(row_idx);
     row->SetTuple(0, item);
     // TODO: Ideally these should be evaluated by the parent scan node.
-    if (EvalConjuncts(&conjunct_ctxs_[0], conjunct_ctxs_.size(), row)) {
+    if (EvalConjuncts(conjunct_ctxs_.data(), conjunct_ctxs_.size(), row)) {
       row_batch->CommitLastRow();
       // The limit is handled outside of this loop.
       if (row_batch->AtCapacity()) break;

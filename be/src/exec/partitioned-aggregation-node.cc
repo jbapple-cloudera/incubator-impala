@@ -465,7 +465,7 @@ void PartitionedAggregationNode::GetSingletonOutput(RowBatch* row_batch) {
   Tuple* output_tuple = GetOutputTuple(
       agg_fn_ctxs_, singleton_output_tuple_, row_batch->tuple_data_pool());
   row->SetTuple(0, output_tuple);
-  if (ExecNode::EvalConjuncts(&conjunct_ctxs_[0], conjunct_ctxs_.size(), row)) {
+  if (ExecNode::EvalConjuncts(conjunct_ctxs_.data(), conjunct_ctxs_.size(), row)) {
     row_batch->CommitLastRow();
     ++num_rows_returned_;
     COUNTER_SET(rows_returned_counter_, num_rows_returned_);
@@ -515,7 +515,7 @@ Status PartitionedAggregationNode::GetRowsFromPartition(RuntimeState* state,
         output_partition_->agg_fn_ctxs, intermediate_tuple, row_batch->tuple_data_pool());
     output_iterator_.Next();
     row->SetTuple(0, output_tuple);
-    if (ExecNode::EvalConjuncts(&conjunct_ctxs_[0], conjunct_ctxs_.size(), row)) {
+    if (ExecNode::EvalConjuncts(conjunct_ctxs_.data(), conjunct_ctxs_.size(), row)) {
       row_batch->CommitLastRow();
       ++num_rows_returned_;
       if (ReachedLimit() || row_batch->AtCapacity()) {
