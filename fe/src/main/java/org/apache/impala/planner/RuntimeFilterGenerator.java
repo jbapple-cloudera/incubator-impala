@@ -76,7 +76,7 @@ public final class RuntimeFilterGenerator {
   // Map of base table tuple ids to a list of runtime filters that
   // can be applied at the corresponding scan nodes.
   private final Map<TupleId, List<RuntimeFilter>> runtimeFiltersByTid_ =
-      Maps.newHashMap();
+      Maps.newLinkedHashMap();
 
   // Generator for filter ids
   private final IdGenerator<RuntimeFilterId> filterIdGenerator =
@@ -264,7 +264,7 @@ public final class RuntimeFilterGenerator {
       List<TupleId> tids = Lists.newArrayList();
       List<SlotId> sids = Lists.newArrayList();
       expr.getIds(tids, sids);
-      Map<TupleId, List<SlotId>> slotsByTid = Maps.newHashMap();
+      Map<TupleId, List<SlotId>> slotsByTid = Maps.newLinkedHashMap();
       // We need to iterate over all the slots of 'expr' and check if they have
       // equivalent slots that are bound by the same base table tuple(s).
       for (SlotId slotId: sids) {
@@ -435,7 +435,7 @@ public final class RuntimeFilterGenerator {
    * Returns a set of all the registered runtime filters.
    */
   public Set<RuntimeFilter> getRuntimeFilters() {
-    Set<RuntimeFilter> result = Sets.newHashSet();
+    Set<RuntimeFilter> result = Sets.newLinkedHashSet();
     for (List<RuntimeFilter> filters: runtimeFiltersByTid_.values()) {
       result.addAll(filters);
     }

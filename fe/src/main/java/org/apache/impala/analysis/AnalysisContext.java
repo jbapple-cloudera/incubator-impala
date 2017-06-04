@@ -450,7 +450,7 @@ public class AnalysisContext {
         analysisResult_.isCreateViewStmt() || analysisResult_.isAlterViewStmt()) {
       // Map of table name to a list of privilege requests associated with that table.
       // These include both table-level and column-level privilege requests.
-      Map<String, List<PrivilegeRequest>> tablePrivReqs = Maps.newHashMap();
+      Map<String, List<PrivilegeRequest>> tablePrivReqs = Maps.newLinkedHashMap();
       // Privilege requests that are not column or table-level.
       List<PrivilegeRequest> otherPrivReqs = Lists.newArrayList();
       // Group the registered privilege requests based on the table they reference.

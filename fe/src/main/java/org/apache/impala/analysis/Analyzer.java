@@ -203,7 +203,7 @@ public class Analyzer {
     public boolean containsSubquery = false;
 
     // all registered conjuncts (map from expr id to conjunct)
-    public final Map<ExprId, Expr> conjuncts = Maps.newHashMap();
+    public final Map<ExprId, Expr> conjuncts = Maps.newLinkedHashMap();
 
     // all registered conjuncts bound by a single tuple id; used in getBoundPredicates()
     public final ArrayList<ExprId> singleTidConjuncts = Lists.newArrayList();
@@ -214,7 +214,7 @@ public class Analyzer {
     // conditions between two tablerefs).
     // A predicate such as "t1.a = t2.b" has two entries, one for 't1' and
     // another one for 't2'.
-    public final Map<TupleId, List<ExprId>> eqJoinConjuncts = Maps.newHashMap();
+    public final Map<TupleId, List<ExprId>> eqJoinConjuncts = Maps.newLinkedHashMap();
 
     // set of conjuncts that have been assigned to some PlanNode
     public Set<ExprId> assignedConjuncts =
@@ -222,40 +222,40 @@ public class Analyzer {
 
     // map from outer-joined tuple id, i.e., one that is nullable,
     // to the last Join clause (represented by its rhs table ref) that outer-joined it
-    public final Map<TupleId, TableRef> outerJoinedTupleIds = Maps.newHashMap();
+    public final Map<TupleId, TableRef> outerJoinedTupleIds = Maps.newLinkedHashMap();
 
     // Map of registered conjunct to the last full outer join (represented by its
     // rhs table ref) that outer joined it.
-    public final Map<ExprId, TableRef> fullOuterJoinedConjuncts = Maps.newHashMap();
+    public final Map<ExprId, TableRef> fullOuterJoinedConjuncts = Maps.newLinkedHashMap();
 
     // Map of full-outer-joined tuple id to the last full outer join that outer-joined it
-    public final Map<TupleId, TableRef> fullOuterJoinedTupleIds = Maps.newHashMap();
+    public final Map<TupleId, TableRef> fullOuterJoinedTupleIds = Maps.newLinkedHashMap();
 
     // Map from semi-joined tuple id, i.e., one that is invisible outside the join's
     // On-clause, to its Join clause (represented by its rhs table ref). An anti-join is
     // a kind of semi-join, so anti-joined tuples are also registered here.
-    public final Map<TupleId, TableRef> semiJoinedTupleIds = Maps.newHashMap();
+    public final Map<TupleId, TableRef> semiJoinedTupleIds = Maps.newLinkedHashMap();
 
     // Map from right-hand side table-ref id of an outer join to the list of
     // conjuncts in its On clause. There is always an entry for an outer join, but the
     // corresponding value could be an empty list. There is no entry for non-outer joins.
-    public final Map<TupleId, List<ExprId>> conjunctsByOjClause = Maps.newHashMap();
+    public final Map<TupleId, List<ExprId>> conjunctsByOjClause = Maps.newLinkedHashMap();
 
     // map from registered conjunct to its containing outer join On clause (represented
     // by its right-hand side table ref); this is limited to conjuncts that can only be
     // correctly evaluated by the originating outer join, including constant conjuncts
-    public final Map<ExprId, TableRef> ojClauseByConjunct = Maps.newHashMap();
+    public final Map<ExprId, TableRef> ojClauseByConjunct = Maps.newLinkedHashMap();
 
     // map from registered conjunct to its containing semi join On clause (represented
     // by its right-hand side table ref)
-    public final Map<ExprId, TableRef> sjClauseByConjunct = Maps.newHashMap();
+    public final Map<ExprId, TableRef> sjClauseByConjunct = Maps.newLinkedHashMap();
 
     // map from registered conjunct to its containing inner join On clause (represented
     // by its right-hand side table ref)
-    public final Map<ExprId, TableRef> ijClauseByConjunct = Maps.newHashMap();
+    public final Map<ExprId, TableRef> ijClauseByConjunct = Maps.newLinkedHashMap();
 
     // map from slot id to the analyzer/block in which it was registered
-    public final Map<SlotId, Analyzer> blockBySlot = Maps.newHashMap();
+    public final Map<SlotId, Analyzer> blockBySlot = Maps.newLinkedHashMap();
 
     // Tracks all privilege requests on catalog objects.
     private final Set<PrivilegeRequest> privilegeReqs = Sets.newLinkedHashSet();
@@ -287,11 +287,12 @@ public class Analyzer {
 
     // map from equivalence class id to the list of its member slots
     private final Map<EquivalenceClassId, ArrayList<SlotId>> equivClassMembers =
-        Maps.newHashMap();
+        Maps.newLinkedHashMap();
 
     // map from slot id to its equivalence class id;
     // only visible at the root Analyzer
-    private final Map<SlotId, EquivalenceClassId> equivClassBySlotId = Maps.newHashMap();
+    private final Map<SlotId, EquivalenceClassId> equivClassBySlotId =
+        Maps.newLinkedHashMap();
 
     // map for each slot to the canonical slot of its equivalence class
     private final ExprSubstitutionMap equivClassSmap = new ExprSubstitutionMap();
@@ -309,7 +310,7 @@ public class Analyzer {
     // The Impalad Catalog has the latest tables from the statestore. In order to use the
     // same version of a table in a single query, we cache all referenced tables here.
     // TODO: Investigate what to do with other catalog objects.
-    private final HashMap<TableName, Table> referencedTables_ = Maps.newHashMap();
+    private final HashMap<TableName, Table> referencedTables_ = Maps.newLinkedHashMap();
 
     // Expr rewriter for folding constants.
     private final ExprRewriter constantFolder_ =
@@ -354,24 +355,24 @@ public class Analyzer {
   private final ArrayList<Analyzer> ancestors_;
 
   // map from lowercase table alias to a view definition in this analyzer's scope
-  private final Map<String, View> localViews_ = Maps.newHashMap();
+  private final Map<String, View> localViews_ = Maps.newLinkedHashMap();
 
   // Map from lowercase table alias to descriptor. Tables without an explicit alias
   // are assigned two implicit aliases: the unqualified and fully-qualified table name.
   // Such tables have two entries pointing to the same descriptor. If an alias is
   // ambiguous, then this map retains the first entry with that alias to simplify error
   // checking (duplicate vs. ambiguous alias).
-  private final Map<String, TupleDescriptor> aliasMap_ = Maps.newHashMap();
+  private final Map<String, TupleDescriptor> aliasMap_ = Maps.newLinkedHashMap();
 
   // Map from tuple id to its corresponding table ref.
-  private final Map<TupleId, TableRef> tableRefMap_ = Maps.newHashMap();
+  private final Map<TupleId, TableRef> tableRefMap_ = Maps.newLinkedHashMap();
 
   // Set of lowercase ambiguous implicit table aliases.
   private final Set<String> ambiguousAliases_ = Sets.newHashSet();
 
   // Map from lowercase fully-qualified path to its slot descriptor. Only contains paths
   // that have a scalar type as destination (see registerSlotRef()).
-  private final Map<String, SlotDescriptor> slotPathMap_ = Maps.newHashMap();
+  private final Map<String, SlotDescriptor> slotPathMap_ = Maps.newLinkedHashMap();
 
   // Tracks the all tables/views found during analysis that were missing metadata.
   private Set<TableName> missingTbls_ = new HashSet<TableName>();
@@ -1812,7 +1813,7 @@ public class Analyzer {
    * to the given tuple ids. Only contains equivalence classes with more than one member.
    */
   private Map<EquivalenceClassId, List<SlotId>> getEquivClasses(List<TupleId> tids) {
-    Map<EquivalenceClassId, List<SlotId>> result = Maps.newHashMap();
+    Map<EquivalenceClassId, List<SlotId>> result = Maps.newLinkedHashMap();
     for (TupleId tid: tids) {
       for (SlotDescriptor slotDesc: getTupleDesc(tid).getSlots()) {
         EquivalenceClassId eqClassId = getEquivClassId(slotDesc.getId());
@@ -2640,7 +2641,7 @@ public class Analyzer {
       // belong to. Maps from the graph partition to its list of value transfers.
       // TODO: Implement a specialized DisjointSet data structure to avoid this step.
       Map<Set<Integer>, List<Pair<Integer, Integer>>> partitionedValueTransfers =
-          Maps.newHashMap();
+          Maps.newLinkedHashMap();
       for (Pair<Integer, Integer> vt: coalescedValueTransfers) {
         Set<Integer> partition = graphPartitions.get(vt.first.intValue());
         List<Pair<Integer, Integer>> l = partitionedValueTransfers.get(partition);

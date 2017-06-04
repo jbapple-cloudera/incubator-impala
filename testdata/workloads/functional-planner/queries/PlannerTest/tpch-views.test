@@ -619,7 +619,7 @@ PLAN-ROOT SINK
 |
 09:HASH JOIN [INNER JOIN]
 |  hash predicates: tpch.lineitem.l_partkey = tpch.partsupp.ps_partkey, tpch.lineitem.l_suppkey = tpch.partsupp.ps_suppkey
-|  runtime filters: RF001 <- tpch.partsupp.ps_partkey, RF002 <- tpch.partsupp.ps_suppkey
+|  runtime filters: RF002 <- tpch.partsupp.ps_suppkey, RF001 <- tpch.partsupp.ps_partkey
 |
 |--03:SCAN HDFS [tpch.partsupp]
 |     partitions=1/1 files=1 size=112.71MB
@@ -650,7 +650,7 @@ PLAN-ROOT SINK
 |
 02:SCAN HDFS [tpch.lineitem]
    partitions=1/1 files=1 size=718.94MB
-   runtime filters: RF001 -> tpch.lineitem.l_partkey, RF002 -> tpch.lineitem.l_suppkey, RF003 -> tpch.lineitem.l_suppkey, RF004 -> tpch.lineitem.l_orderkey, RF005 -> tpch.lineitem.l_partkey
+   runtime filters: RF002 -> tpch.lineitem.l_suppkey, RF001 -> tpch.lineitem.l_partkey, RF003 -> tpch.lineitem.l_suppkey, RF004 -> tpch.lineitem.l_orderkey, RF005 -> tpch.lineitem.l_partkey
 ====
 # TPCH-Q10
 # Q10 - Returned Item Reporting Query

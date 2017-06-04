@@ -17,6 +17,7 @@
 
 package org.apache.impala.analysis;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -219,11 +220,11 @@ final class MultiEdge {
    * Constructs a MultiEdge object from a thrift object
    */
   public static MultiEdge fromThrift(TMultiEdge obj){
-    Set<Vertex> sources = Sets.newHashSet();
+    Set<Vertex> sources = Sets.newLinkedHashSet();
     for (TVertex vertex: obj.sources) {
       sources.add(Vertex.fromThrift(vertex));
     }
-    Set<Vertex> targets = Sets.newHashSet();
+    Set<Vertex> targets = Sets.newLinkedHashSet();
     for (TVertex vertex: obj.targets) {
       targets.add(Vertex.fromThrift(vertex));
     }
@@ -282,11 +283,11 @@ public class ColumnLineageGraph {
   private long timestamp_;
 
   // Map of Vertex labels to Vertex objects.
-  private final Map<String, Vertex> vertices_ = Maps.newHashMap();
+  private final Map<String, Vertex> vertices_ = Maps.newLinkedHashMap();
 
   // Map of Vertex ids to Vertex objects. Used primarily during the construction of the
   // ColumnLineageGraph from a serialized JSON object.
-  private final Map<VertexId, Vertex> idToVertexMap_ = Maps.newHashMap();
+  private final Map<VertexId, Vertex> idToVertexMap_ = Maps.newLinkedHashMap();
 
   // For an INSERT or a CTAS, these are the columns of the
   // destination table plus any partitioning columns (when dynamic partitioning is used).
@@ -324,11 +325,11 @@ public class ColumnLineageGraph {
    */
   private MultiEdge createMultiEdge(Set<String> targets, Set<String> sources,
       MultiEdge.EdgeType type) {
-    Set<Vertex> targetVertices = Sets.newHashSet();
+    Set<Vertex> targetVertices = Sets.newLinkedHashSet();
     for (String target: targets) {
       targetVertices.add(createVertex(target));
     }
-    Set<Vertex> sourceVertices = Sets.newHashSet();
+    Set<Vertex> sourceVertices = Sets.newLinkedHashSet();
     for (String source: sources) {
       sourceVertices.add(createVertex(source));
     }
@@ -384,10 +385,11 @@ public class ColumnLineageGraph {
     Preconditions.checkState(resultExprs.size() == targetColumnLabels_.size());
     for (int i = 0; i < resultExprs.size(); ++i) {
       Expr expr = resultExprs.get(i);
-      Set<String> sourceBaseCols = Sets.newHashSet();
+      Set<String> sourceBaseCols = Sets.newLinkedHashSet();
       List<Expr> dependentExprs = Lists.newArrayList();
       getSourceBaseCols(expr, sourceBaseCols, dependentExprs, false);
-      Set<String> targets = Sets.newHashSet(targetColumnLabels_.get(i));
+      Set<String> targets = Sets.newLinkedHashSet(
+          Arrays.asList(targetColumnLabels_.get(i)));
       createMultiEdge(targets, sourceBaseCols, MultiEdge.EdgeType.PROJECTION);
       if (!dependentExprs.isEmpty()) {
         // We have additional exprs that 'expr' has a predicate dependency on.
@@ -395,7 +397,7 @@ public class ColumnLineageGraph {
         // predicate dependencies. For each direct predicate dependency p, 'expr' is
         // transitively predicate dependent on all exprs that p is projection and
         // predicate dependent on.
-        Set<String> predicateBaseCols = Sets.newHashSet();
+        Set<String> predicateBaseCols = Sets.newLinkedHashSet();
         for (Expr dependentExpr: dependentExprs) {
           getSourceBaseCols(dependentExpr, predicateBaseCols, null, true);
         }
@@ -415,12 +417,12 @@ public class ColumnLineageGraph {
       if (expr.isAuxExpr()) continue;
       resultDependencyPredicates_.add(expr);
     }
-    Set<String> predicateBaseCols = Sets.newHashSet();
+    Set<String> predicateBaseCols = Sets.newLinkedHashSet();
     for (Expr expr: resultDependencyPredicates_) {
       getSourceBaseCols(expr, predicateBaseCols, null, true);
     }
     if (predicateBaseCols.isEmpty()) return;
-    Set<String> targets = Sets.newHashSet(targetColumnLabels_);
+    Set<String> targets = Sets.newLinkedHashSet(targetColumnLabels_);
     createMultiEdge(targets, predicateBaseCols, MultiEdge.EdgeType.PREDICATE);
   }
 
@@ -598,7 +600,7 @@ public class ColumnLineageGraph {
     long timestamp = (Long) jsonObj.get("timestamp");
     ColumnLineageGraph graph = new ColumnLineageGraph(stmt, user, timestamp);
     JSONArray serializedVertices = (JSONArray) jsonObj.get("vertices");
-    Set<Vertex> vertices = Sets.newHashSet();
+    Set<Vertex> vertices = Sets.newLinkedHashSet();
     for (int i = 0; i < serializedVertices.size(); ++i) {
       Vertex v = Vertex.fromJsonObj((JSONObject) serializedVertices.get(i));
       vertices.add(v);
@@ -625,7 +627,7 @@ public class ColumnLineageGraph {
   }
 
   private Set<Vertex> getVerticesFromJSONArray(JSONArray vertexIdArray) {
-    Set<Vertex> vertices = Sets.newHashSet();
+    Set<Vertex> vertices = Sets.newLinkedHashSet();
     for (int i = 0; i < vertexIdArray.size(); ++i) {
       int sourceId = ((Long) vertexIdArray.get(i)).intValue();
       Vertex sourceVertex = idToVertexMap_.get(new VertexId(sourceId));

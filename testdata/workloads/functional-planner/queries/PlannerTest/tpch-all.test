@@ -1659,7 +1659,7 @@ PLAN-ROOT SINK
 |
 09:HASH JOIN [INNER JOIN]
 |  hash predicates: l_partkey = ps_partkey, l_suppkey = ps_suppkey
-|  runtime filters: RF001 <- ps_partkey, RF002 <- ps_suppkey
+|  runtime filters: RF002 <- ps_suppkey, RF001 <- ps_partkey
 |
 |--03:SCAN HDFS [tpch.partsupp]
 |     partitions=1/1 files=1 size=112.71MB
@@ -1690,7 +1690,7 @@ PLAN-ROOT SINK
 |
 02:SCAN HDFS [tpch.lineitem]
    partitions=1/1 files=1 size=718.94MB
-   runtime filters: RF001 -> l_partkey, RF002 -> l_suppkey, RF003 -> l_suppkey, RF004 -> l_orderkey, RF005 -> l_partkey
+   runtime filters: RF002 -> l_suppkey, RF001 -> l_partkey, RF003 -> l_suppkey, RF004 -> l_orderkey, RF005 -> l_partkey
 ---- DISTRIBUTEDPLAN
 PLAN-ROOT SINK
 |
@@ -1721,7 +1721,7 @@ PLAN-ROOT SINK
 |
 09:HASH JOIN [INNER JOIN, BROADCAST]
 |  hash predicates: l_partkey = ps_partkey, l_suppkey = ps_suppkey
-|  runtime filters: RF001 <- ps_partkey, RF002 <- ps_suppkey
+|  runtime filters: RF002 <- ps_suppkey, RF001 <- ps_partkey
 |
 |--17:EXCHANGE [BROADCAST]
 |  |
@@ -1762,7 +1762,7 @@ PLAN-ROOT SINK
 |
 02:SCAN HDFS [tpch.lineitem]
    partitions=1/1 files=1 size=718.94MB
-   runtime filters: RF001 -> l_partkey, RF002 -> l_suppkey, RF003 -> l_suppkey, RF004 -> l_orderkey, RF005 -> l_partkey
+   runtime filters: RF002 -> l_suppkey, RF001 -> l_partkey, RF003 -> l_suppkey, RF004 -> l_orderkey, RF005 -> l_partkey
 ---- PARALLELPLANS
 PLAN-ROOT SINK
 |
@@ -1797,7 +1797,7 @@ PLAN-ROOT SINK
 |
 09:HASH JOIN [INNER JOIN, BROADCAST]
 |  hash predicates: l_partkey = ps_partkey, l_suppkey = ps_suppkey
-|  runtime filters: RF001 <- ps_partkey, RF002 <- ps_suppkey
+|  runtime filters: RF002 <- ps_suppkey, RF001 <- ps_partkey
 |
 |--JOIN BUILD
 |  |  join-table-id=01 plan-id=02 cohort-id=01
@@ -1854,7 +1854,7 @@ PLAN-ROOT SINK
 |
 02:SCAN HDFS [tpch.lineitem]
    partitions=1/1 files=1 size=718.94MB
-   runtime filters: RF001 -> l_partkey, RF002 -> l_suppkey, RF003 -> l_suppkey, RF004 -> l_orderkey, RF005 -> l_partkey
+   runtime filters: RF002 -> l_suppkey, RF001 -> l_partkey, RF003 -> l_suppkey, RF004 -> l_orderkey, RF005 -> l_partkey
 ====
 # TPCH-Q10
 # Q10 - Returned Item Reporting Query
