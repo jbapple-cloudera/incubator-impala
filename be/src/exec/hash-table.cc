@@ -346,7 +346,7 @@ void HashTableCtx::ExprValuesCache::ResetForRead() {
   ResetIterators();
 }
 
-const double HashTable::MAX_FILL_FACTOR = 0.5f;
+const double HashTable::MAX_FILL_FACTOR = 0.9f;
 
 HashTable* HashTable::Create(RuntimeState* state,
     BufferedBlockMgr::Client* client, bool stores_duplicates, int num_build_tuples,
