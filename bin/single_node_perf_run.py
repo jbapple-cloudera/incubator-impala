@@ -58,6 +58,7 @@ from tempfile import mkdtemp
 import json
 import os
 import sh
+import shutil
 import subprocess
 import sys
 import textwrap
