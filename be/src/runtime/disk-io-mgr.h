@@ -581,7 +581,7 @@ class DiskIoMgr : public CacheLineAligned {
     boost::mutex hdfs_lock_;
 
     /// If true, this scan range has been cancelled.
-    bool is_cancelled_;
+    bool is_cancelled_ = false;
 
     /// Last modified time of the file associated with the scan range
     int64_t mtime_;
