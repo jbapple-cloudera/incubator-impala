@@ -21,6 +21,8 @@
 
 #include <algorithm>
 
+#include <sys/mman.h>
+
 #include "common/logging.h"
 #include "runtime/runtime-state.h"
 #include "util/hash-util.h"
@@ -30,6 +32,8 @@ using namespace std;
 namespace impala {
 
 constexpr uint32_t BloomFilter::REHASH[8] __attribute__((aligned(32)));
+
+        static int64_t HUGE_PAGE_SIZE = 2LL * 1024 * 1024;
 
 BloomFilter::BloomFilter(const int log_heap_space)
   : // Since log_heap_space is in bytes, we need to convert it to the number of tiny Bloom
@@ -44,11 +48,54 @@ BloomFilter::BloomFilter(const int log_heap_space)
   DCHECK(log_num_buckets_ <= 32)
       << "Bloom filter too large. log_heap_space: " << log_heap_space;
   const size_t alloc_size = directory_size();
-  const int malloc_failed =
-      posix_memalign(reinterpret_cast<void**>(&directory_), 64, alloc_size);
-  DCHECK_EQ(malloc_failed, 0) << "Malloc failed. log_heap_space: " << log_heap_space
-                              << " log_num_buckets_: " << log_num_buckets_
-                              << " alloc_size: " << alloc_size;
+
+
+  bool use_huge_pages = alloc_size % HUGE_PAGE_SIZE == 0;
+  if (!use_huge_pages) {
+    const int malloc_failed =
+        posix_memalign(reinterpret_cast<void**>(&directory_), 64, alloc_size);
+    DCHECK_EQ(malloc_failed, 0) << "Malloc failed. log_heap_space: " << log_heap_space
+                                << " log_num_buckets_: " << log_num_buckets_
+                                << " alloc_size: " << alloc_size;
+  } else {
+
+    int64_t map_len = alloc_size;
+    // Map an extra huge page so we can fix up the alignment if needed.
+    map_len += HUGE_PAGE_SIZE;
+    uint8_t* mem = reinterpret_cast<uint8_t*>(mmap(
+        nullptr, map_len, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE, -1, 0));
+    DCHECK_NE(mem, MAP_FAILED) << strerror(errno) << log_heap_space
+                               << " log_num_buckets_: " << log_num_buckets_
+                               << " alloc_size: " << alloc_size
+                               << " map_len: " << map_len;
+
+    // mmap() may return memory that is not aligned to the huge page size. For the
+    // subsequent madvise() call to work well, we need to align it ourselves and
+    // unmap the memory on either side of the buffer that we don't need.
+    uintptr_t misalignment = reinterpret_cast<uintptr_t>(mem) % HUGE_PAGE_SIZE;
+    if (misalignment != 0) {
+      uintptr_t fixup = HUGE_PAGE_SIZE - misalignment;
+      munmap(mem, fixup);
+      mem += fixup;
+      map_len -= fixup;
+    }
+    munmap(mem + alloc_size, map_len - alloc_size);
+    DCHECK_EQ(reinterpret_cast<uintptr_t>(mem) % HUGE_PAGE_SIZE, 0) << mem;
+// Mark the buffer as a candidate for promotion to huge pages. The Linux Transparent
+// Huge Pages implementation will try to back the memory with a huge page if it is
+// enabled. MADV_HUGEPAGE was introduced in 2.6.38, so we similarly need to skip this
+// code if we are compiling against an older kernel.
+#ifdef MADV_HUGEPAGE
+    int rc;
+    // According to madvise() docs it may return EAGAIN to signal that we should retry.
+    do {
+      rc = madvise(mem, alloc_size, MADV_HUGEPAGE);
+    } while (rc == -1 && errno == EAGAIN);
+    DCHECK_EQ(rc, 0) << "madvise(MADV_HUGEPAGE) shouldn't fail" << errno;
+#endif
+    directory_ = reinterpret_cast<decltype(directory_)>(mem);
+  }
+
   DCHECK(directory_ != nullptr);
   memset(directory_, 0, alloc_size);
 }
@@ -61,7 +108,13 @@ BloomFilter::BloomFilter(const TBloomFilter& thrift)
 
 BloomFilter::~BloomFilter() {
   if (directory_) {
-    free(directory_);
+    bool use_huge_pages = GetHeapSpaceUsed() % HUGE_PAGE_SIZE == 0;
+    if (use_huge_pages) {
+      int rc = munmap(directory_, GetHeapSpaceUsed());
+      DCHECK_EQ(rc, 0) << "Unexpected munmap() error: " << errno;
+    } else {
+      free(directory_);
+    }
     directory_ = NULL;
   }
 }
