@@ -56,9 +56,10 @@ fi
 sudo service ntp restart
 sudo service ntp stop
 sudo ntpdate us.pool.ntp.org
-if [ -f /sys/hypervisor/uuid ] && [ `head -c 3 /sys/hypervisor/uuid` == ec2 ]; then
+if [ -f /sys/hypervisor/uuid ] && [ `head -c 3 /sys/hypervisor/uuid` == ec2 ]
+then
   sudo sed -i 's/ubuntu\.pool/amazon\.pool/' /etc/ntp.conf
-else
+fi
 grep amazon /etc/ntp.conf
 grep ubuntu /etc/ntp.conf
 sudo service ntp start
