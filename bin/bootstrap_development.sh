@@ -18,8 +18,8 @@
 # under the License.
 
 # This script bootstraps a development environment from almost nothing; it is known to
-# work on Ubuntu 14.04 and 16.04. It clobbers some local environment, so it is best to
-# run this in a fresh install.
+# work on Ubuntu 14.04 and 16.04. It clobbers some local environment and system
+# configurations, so it is best to run this in a fresh install.
 #
 # The intended user is a person who wants to start contributing code to Impala. This
 # script serves as an executable reference point for how to get started.
@@ -31,31 +31,43 @@
 
 set -eux -o pipefail
 
-sudo apt-get update
-
-sudo apt-get --yes install ccache ninja-build g++ gcc git libsasl2-dev libssl-dev make \
-     maven python-dev python-setuptools postgresql liblzo2-dev ntp ntpdate
-
-if lsb_release -d | grep "Ubuntu 16.04"
+if ! lsb_release -d | grep "Ubuntu"
 then
-  sudo apt-get --yes install openjdk-8-jdk
-  export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-  echo 'export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64' >> ~/.bashrc
-elif lsb_release -d | grep "Ubuntu 14.04"
-then
-  sudo apt-get --yes install openjdk-7-jdk
-  export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-  echo 'export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64' >> ~/.bashrc
-else
-  echo "CANNOT INSTALL JAVA" >&2
+  echo "This script only supports Ubuntu" >&2
   exit 1
 fi
+
+VERSION=$(lsb_release -rs)
+
+if ! [[ VERSION = 14.04 || VERSION = 16.04 ]]
+then
+  echo "This script only supports Ubuntu 14.04 and 16.04" >&2
+  exit 1
+fi
+
+sudo apt-get update
+
+sudo apt-get --yes install ccache g++ gcc git liblzo2-dev libsasl2-dev libssl-dev make \
+     maven ninja-build ntp ntpdate python-dev python-setuptools postgresql
+
+# TODO: config ccache to give it plenty of space
+# TODO: check that there is enough space on disk to do a build and data load
+
+JDK_VERSION=7
+if [[ $VERSION = 16.04 ]]
+then
+  JDK_VERSION=8
+fi
+sudo apt-get --yes install openjdk-${JDK_VERSION}-jdk
+SET_JAVA_HOME="export JAVA_HOME=/usr/lib/jvm/java-${JDK_VERSION}-openjdk-amd64"
+echo "$SET_JAVA_HOME" >> ~/.bashrc
+eval "$SET_JAVA_HOME"
 
 sudo service ntp restart
 sudo service ntp stop
 sudo ntpdate us.pool.ntp.org
 # If on EC2, use Amazon's ntp servers
-if [ -f /sys/hypervisor/uuid ] && [ `head -c 3 /sys/hypervisor/uuid` == ec2 ]
+if sudo dmidecode -s bios-version | grep amazon
 then
   sudo sed -i 's/ubuntu\.pool/amazon\.pool/' /etc/ntp.conf
   grep amazon /etc/ntp.conf
@@ -63,47 +75,38 @@ then
 fi
 sudo service ntp start
 
-# TODO: config ccache
-
-# TODO: check that there is enough space on disk to do a data load
-
 # If there is no Impala git repo, get one now
-if ! test -d ~/Impala
+if ! [[ -d ~/Impala ]]
 then
-  time -p git clone //git-wip-us.apache.org/repos/asf/incubator-impala.git
+  time -p git clone https://git-wip-us.apache.org/repos/asf/incubator-impala.git ~/Impala
 fi
-cd ~/Impala
 
 # IMPALA-3932, IMPALA-3926
-if [ -z ${LD_LIBRARY_PATH+x} ]
+SET_LD_LIBRARY_PATH="export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/"
+if ! [[ -z ${LD_LIBRARY_PATH+x} ]]
 then
-  export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/
-  echo 'export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/' >> ~/.bashrc
-else
-  export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH
-  echo 'export LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH' >> ~/.bashrc
+  SET_LD_LIBRARY_PATH="$SET_LD_LIBRARY_PATH:"'$LD_LIBRARY_PATH'
 fi
+echo "$SET_LD_LIBRARY_PATH" >> ~/.bashrc
+eval "$SET_LD_LIBRARY_PATH"
 
 # Set up postgress for HMS
 sudo -u postgres psql -c "CREATE ROLE hiveuser LOGIN PASSWORD 'password';" postgres
 sudo -u postgres psql -c "ALTER ROLE hiveuser WITH CREATEDB;" postgres
 # TODO: What are the security implications of this?
-if lsb_release -d | grep "Ubuntu 16.04"
-then
-  sudo sed -i 's/local   all             all                                     peer/local   all             all                                     trust/g' /etc/postgresql/9.5/main/pg_hba.conf
-elif lsb_release -d | grep "Ubuntu 14.04"
-then
-  sudo sed -i 's/local   all             all                                     peer/local   all             all                                     trust/g' /etc/postgresql/9.3/main/pg_hba.conf
-else
-  echo "CANNOT FIX POSTGRES"
-  exit 1
-fi
+for PG_AUTH_FILE in /etc/postgresql/*/main/pg_hba.conf
+do
+  sudo sed -ri 's/local +all +all +peer/local all all trust/g' $PG_AUTH_FILE
+done
 sudo service postgresql restart
 sudo /etc/init.d/postgresql reload
 sudo service postgresql restart
 
 # Setup ssh to ssh to localhost
-ssh-keygen -t rsa -N '' -q -f ~/.ssh/id_rsa
+if [[ -f ~/.ssh/id_rsa ]]
+then
+  ssh-keygen -t rsa -N '' -q -f ~/.ssh/id_rsa
+fi
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 echo "NoHostAuthenticationForLocalhost yes" >> ~/.ssh/config
@@ -112,12 +115,12 @@ echo "NoHostAuthenticationForLocalhost yes" >> ~/.ssh/config
 echo "127.0.0.1 $(hostname -s) $(hostname)" | sudo tee -a /etc/hosts
 sudo sed -i 's/127.0.1.1/127.0.0.1/g' /etc/hosts
 
-sudo mkdir /var/lib/hadoop-hdfs
+sudo mkdir -p /var/lib/hadoop-hdfs
 sudo chown $(whoami) /var/lib/hadoop-hdfs/
 
-echo "*               hard    nofile          1048576" | sudo tee -a /etc/security/limits.conf
-echo "*               soft    nofile          1048576" | sudo tee -a /etc/security/limits.conf
+echo "* - nofile 1048576" | sudo tee -a /etc/security/limits.conf
 
+cd ~/Impala
 export IMPALA_HOME="$(pwd)"
 
 # LZO is not needed to compile or run Impala, but it is needed for the data load
@@ -130,7 +133,7 @@ time -p ant package
 cd "$IMPALA_HOME"
 
 export MAX_PYTEST_FAILURES=0
-if lsb_release -d | grep "Ubuntu 14.04"
+if [[ VERSION = "Ubuntu 14.04" ]]
 then
   unset LD_LIBRARY_PATH
 fi
