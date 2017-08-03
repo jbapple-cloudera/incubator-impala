@@ -39,7 +39,7 @@ fi
 
 VERSION=$(lsb_release -rs)
 
-if ! [[ VERSION = 14.04 || VERSION = 16.04 ]]
+if ! [[ $VERSION = 14.04 || $VERSION = 16.04 ]]
 then
   echo "This script only supports Ubuntu 14.04 and 16.04" >&2
   exit 1
