@@ -103,7 +103,7 @@ sudo /etc/init.d/postgresql reload
 sudo service postgresql restart
 
 # Setup ssh to ssh to localhost
-if [[ -f ~/.ssh/id_rsa ]]
+if ! [[ -f ~/.ssh/id_rsa ]]
 then
   ssh-keygen -t rsa -N '' -q -f ~/.ssh/id_rsa
 fi
