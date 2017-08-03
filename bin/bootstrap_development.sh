@@ -67,8 +67,11 @@ sudo service ntp start
 # TODO: config ccache
 
 # TODO: check that there is enough space on disk to do a data load
-time -p git clone http://gerrit.cloudera.org:8080/Impala-ASF Impala
-cd Impala
+if ! test -d ~/Impala
+then
+  time -p git clone http://gerrit.cloudera.org:8080/Impala-ASF ~/Impala
+fi
+cd ~/Impala
 
 # IMPALA-3932, IMPALA-3926
 if [ -z ${LD_LIBRARY_PATH+x} ]
