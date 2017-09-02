@@ -476,19 +476,22 @@ if [[ "${TARGET_FILESYSTEM}" == "hdfs" ]]; then
 fi
 
 if [ $SKIP_METADATA_LOAD -eq 0 ]; then
-  run-step "Loading custom schemas" load-custom-schemas.log load-custom-schemas
+  echo "Waiting"
+  wait
+  run-step "Loading custom schemas" load-custom-schemas.log load-custom-schemas&
   run-step "Loading functional-query data" load-functional-query.log \
-      load-data "functional-query" "exhaustive"
-  run-step "Loading TPC-H data" load-tpch.log load-data "tpch" "core"
+      load-data "functional-query" "exhaustive"&
+  run-step "Loading TPC-H data" load-tpch.log load-data "tpch" "core"&
   # Load tpch nested data.
   # TODO: Hacky and introduces more complexity into the system, but it is expedient.
   if [[ -n "$CM_HOST" ]]; then
     LOAD_NESTED_ARGS="--cm-host $CM_HOST"
   fi
   run-step "Loading nested data" load-nested.log \
-    ${IMPALA_HOME}/testdata/bin/load_nested.py ${LOAD_NESTED_ARGS:-}
-  run-step "Loading TPC-DS data" load-tpcds.log load-data "tpcds" "core"
-  run-step "Loading auxiliary workloads" load-aux-workloads.log load-aux-workloads
+    ${IMPALA_HOME}/testdata/bin/load_nested.py ${LOAD_NESTED_ARGS:-}&
+  run-step "Loading TPC-DS data" load-tpcds.log load-data "tpcds" "core"&
+  run-step "Loading auxiliary workloads" load-aux-workloads.log load-aux-workloads&
+  wait
   run-step "Loading dependent tables" copy-and-load-dependent-tables.log \
       copy-and-load-dependent-tables
   run-step "Loading custom data" load-custom-data.log load-custom-data
