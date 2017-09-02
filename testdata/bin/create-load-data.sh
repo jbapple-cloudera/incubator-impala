@@ -481,13 +481,13 @@ if [ $SKIP_METADATA_LOAD -eq 0 ]; then
   run-step "Loading custom schemas" load-custom-schemas.log load-custom-schemas&
   run-step "Loading functional-query data" load-functional-query.log \
       load-data "functional-query" "exhaustive"&
-  run-step "Loading TPC-H data" load-tpch.log load-data "tpch" "core"&
+
   # Load tpch nested data.
   # TODO: Hacky and introduces more complexity into the system, but it is expedient.
   if [[ -n "$CM_HOST" ]]; then
     LOAD_NESTED_ARGS="--cm-host $CM_HOST"
   fi
-  run-step "Loading nested data" load-nested.log \
+  run-step "Loading TPC-H data" load-tpch.log load-data "tpch" "core" &&  run-step "Loading nested data" load-nested.log \
     ${IMPALA_HOME}/testdata/bin/load_nested.py ${LOAD_NESTED_ARGS:-}&
   run-step "Loading TPC-DS data" load-tpcds.log load-data "tpcds" "core"&
   run-step "Loading auxiliary workloads" load-aux-workloads.log load-aux-workloads&
@@ -505,10 +505,12 @@ fi
 
 if $KUDU_IS_SUPPORTED; then
   # Tests depend on the kudu data being clean, so load the data from scratch.
+  wait
   run-step "Loading Kudu functional" load-kudu.log \
-        load-data "functional-query" "core" "kudu/none/none" force
+        load-data "functional-query" "core" "kudu/none/none" force &
   run-step "Loading Kudu TPCH" load-kudu-tpch.log \
-        load-data "tpch" "core" "kudu/none/none" force
+           load-data "tpch" "core" "kudu/none/none" force &
+  wait
 fi
 run-step "Loading Hive UDFs" build-and-copy-hive-udfs.log \
     build-and-copy-hive-udfs
