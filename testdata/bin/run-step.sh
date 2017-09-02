@@ -48,5 +48,5 @@ function run-step {
     return 1
   fi
   ELAPSED_TIME=$(($SECONDS - $START_TIME))
-  echo "    OK (Took: $(($ELAPSED_TIME/60)) min $(($ELAPSED_TIME%60)) sec)"
+  echo "    '$@' OK (Took: $(($ELAPSED_TIME/60)) min $(($ELAPSED_TIME%60)) sec)"
 }
