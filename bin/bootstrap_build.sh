@@ -42,7 +42,7 @@ if [[ $DISTRIB_RELEASE = 14.04 ]]
 then
   JDK_VERSION=7
 fi
-apt-get --yes install openjdk-${JDK_VERSION}-jdk openjdk-${JDK_VERSION}-source
+sudo apt-get --yes install openjdk-${JDK_VERSION}-jdk openjdk-${JDK_VERSION}-source
 export JAVA_HOME=/usr/lib/jvm/java-${JDK_VERSION}-openjdk-amd64
 
 ./buildall.sh -notests -so
