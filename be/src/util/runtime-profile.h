@@ -22,6 +22,8 @@
 #include <boost/function.hpp>
 #include <boost/thread/lock_guard.hpp>
 #include <iostream>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "common/atomic.h"
 #include "common/status.h"
@@ -377,7 +379,7 @@ class RuntimeProfile { // NOLINT: This struct is not packed, but there are not s
 
   /// Map from counter names to counters.  The profile owns the memory for the
   /// counters.
-  typedef std::map<std::string, Counter*> CounterMap;
+  typedef std::unordered_map<std::string, Counter*> CounterMap;
   CounterMap counter_map_;
 
   /// Map from parent counter name to a set of child counter name.
@@ -386,7 +388,7 @@ class RuntimeProfile { // NOLINT: This struct is not packed, but there are not s
   ChildCounterMap child_counter_map_;
 
   /// A set of bucket counters registered in this runtime profile.
-  std::set<std::vector<Counter*>*> bucketing_counters_;
+  std::unordered_set<std::vector<Counter*>*> bucketing_counters_;
 
   /// Rate counters, which also appear in 'counter_map_'. Tracked separately to enable
   /// stopping the counters.
@@ -398,7 +400,7 @@ class RuntimeProfile { // NOLINT: This struct is not packed, but there are not s
 
   /// Time series counters. These do not appear in 'counter_map_'. Tracked separately
   /// because they are displayed separately in the profile and need to be stopped.
-  typedef std::map<std::string, TimeSeriesCounter*> TimeSeriesCounterMap;
+  typedef std::unordered_map<std::string, TimeSeriesCounter*> TimeSeriesCounterMap;
   TimeSeriesCounterMap time_series_counter_map_;
 
   /// True if this profile has active periodic counters, including bucketing, rate,
@@ -412,7 +414,7 @@ class RuntimeProfile { // NOLINT: This struct is not packed, but there are not s
   /// Child profiles.  Does not own memory.
   /// We record children in both a map (to facilitate updates) and a vector
   /// (to print things in the order they were registered)
-  typedef std::map<std::string, RuntimeProfile*> ChildMap;
+  typedef std::unordered_map<std::string, RuntimeProfile*> ChildMap;
   ChildMap child_map_;
 
   /// Vector of (profile, indentation flag).
@@ -432,13 +434,13 @@ class RuntimeProfile { // NOLINT: This struct is not packed, but there are not s
   /// Protects info_strings_ and info_strings_display_order_.
   mutable SpinLock info_strings_lock_;
 
-  typedef std::map<std::string, EventSequence*> EventSequenceMap;
+  typedef std::unordered_map<std::string, EventSequence*> EventSequenceMap;
   EventSequenceMap event_sequence_map_;
 
   /// Protects event_sequence_map_.
   mutable SpinLock event_sequence_lock_;
 
-  typedef std::map<std::string, SummaryStatsCounter*> SummaryStatsCounterMap;
+  typedef std::unordered_map<std::string, SummaryStatsCounter*> SummaryStatsCounterMap;
   SummaryStatsCounterMap summary_stats_map_;
 
   /// Protects summary_stats_map_.

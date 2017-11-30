@@ -234,7 +234,7 @@ void RuntimeProfile::Update(const vector<TRuntimeProfileNode>& nodes, int* idx) 
   const TRuntimeProfileNode& node = nodes[*idx];
   {
     // Update this level.
-    map<string, Counter*>::iterator dst_iter;
+    //map<string, Counter*>::iterator dst_iter;
     lock_guard<SpinLock> l(counter_map_lock_);
     for (int i = 0; i < node.counters.size(); ++i) {
       const TCounter& tcounter = node.counters[i];
@@ -336,7 +336,7 @@ void RuntimeProfile::Update(const vector<TRuntimeProfileNode>& nodes, int* idx) 
 
 void RuntimeProfile::Divide(int n) {
   DCHECK_GT(n, 0);
-  map<string, Counter*>::iterator iter;
+  decltype(counter_map_.begin()) iter;
   {
     lock_guard<SpinLock> l(counter_map_lock_);
     for (iter = counter_map_.begin(); iter != counter_map_.end(); ++iter) {
@@ -615,7 +615,7 @@ void RuntimeProfile::PrettyPrint(ostream* s, const string& prefix) const {
     child_counter_map = child_counter_map_;
   }
 
-  map<string, Counter*>::const_iterator total_time =
+  auto total_time =
       counter_map.find(TOTAL_TIME_COUNTER_NAME);
   DCHECK(total_time != counter_map.end());
 
@@ -788,8 +788,7 @@ void RuntimeProfile::ToThrift(vector<TRuntimeProfileNode>* nodes) const {
     counter_map = counter_map_;
     node.child_counters_map = child_counter_map_;
   }
-  for (map<string, Counter*>::const_iterator iter = counter_map.begin();
-       iter != counter_map.end(); ++iter) {
+  for (auto iter = counter_map.begin(); iter != counter_map.end(); ++iter) {
     TCounter counter;
     counter.name = iter->first;
     counter.value = iter->second->value();
