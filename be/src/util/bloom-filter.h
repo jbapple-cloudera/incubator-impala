@@ -105,6 +105,10 @@ class BloomFilter {
   /// of the minimum number of bytes we need.
   static int MinLogSpace(const size_t ndv, const double fpp);
 
+  /// Like MinLogSpace with two arguments, but picks an fpp based on the particulars of
+  /// BloomFilter's structure.
+  static int MinLogSpace(const size_t ndv);
+
   /// Returns the expected false positive rate for the given ndv and log_bufferpool_space
   static double FalsePositiveProb(const size_t ndv, const int log_bufferpool_space);
 

@@ -472,10 +472,9 @@ public final class RuntimeFilterGenerator {
     }
 
     /**
-     * Sets the filter size (in bytes) required for a bloom filter to achieve the
-     * configured maximum false-positive rate based on the expected NDV. Also bounds the
-     * filter size between the max and minimum filter sizes supplied to it by
-     * 'filterSizeLimits'.
+     * Sets the filter size (in bytes) required for a bloom filter for the expected
+     * NDV. Also bounds the filter size between the max and minimum filter sizes supplied
+     * to it by 'filterSizeLimits'.
      */
     private void calculateFilterSize(FilterSizeLimits filterSizeLimits) {
       if (type_ == TRuntimeFilterType.MIN_MAX) return;
@@ -483,8 +482,7 @@ public final class RuntimeFilterGenerator {
         filterSizeBytes_ = filterSizeLimits.defaultVal;
         return;
       }
-      double fpp = BackendConfig.INSTANCE.getMaxFilterErrorRate();
-      int logFilterSize = FeSupport.GetMinLogSpaceForBloomFilter(ndvEstimate_, fpp);
+      int logFilterSize = FeSupport.GetMinLogSpaceForBloomFilter(ndvEstimate_);
       filterSizeBytes_ = 1L << logFilterSize;
       filterSizeBytes_ = Math.max(filterSizeBytes_, filterSizeLimits.minVal);
       filterSizeBytes_ = Math.min(filterSizeBytes_, filterSizeLimits.maxVal);

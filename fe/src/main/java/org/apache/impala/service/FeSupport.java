@@ -115,7 +115,7 @@ public class FeSupport {
   public native static byte[] NativeParseQueryOptions(String csvQueryOptions,
       byte[] queryOptions);
 
-  public native static int MinLogSpaceForBloomFilter(long ndv, double fpp);
+  public native static int MinLogSpaceForBloomFilter(long ndv);
 
   /**
    * Locally caches the jar at the specified HDFS location.
@@ -336,17 +336,16 @@ public class FeSupport {
   }
 
   /**
-   * Returns the log (base 2) of the minimum number of bytes we need for a Bloom
-   * filter with 'ndv' unique elements and a false positive probability of less
-   * than 'fpp'.
+   * Returns the log (base 2) of the number of bytes to use for a Bloom
+   * filter with 'ndv' unique elements.
    */
-  public static int GetMinLogSpaceForBloomFilter(long ndv, double fpp) {
+  public static int GetMinLogSpaceForBloomFilter(long ndv) {
     try {
-      return MinLogSpaceForBloomFilter(ndv, fpp);
+      return MinLogSpaceForBloomFilter(ndv);
     } catch (UnsatisfiedLinkError e) {
       loadLibrary();
     }
-    return MinLogSpaceForBloomFilter(ndv, fpp);
+    return MinLogSpaceForBloomFilter(ndv);
   }
 
   /**

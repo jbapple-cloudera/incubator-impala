@@ -70,9 +70,7 @@ struct TBackendGflags {
 
   22: required TReservedWordsVersion reserved_words_version
 
-  23: required double max_filter_error_rate
+  23: required i64 min_buffer_size
 
-  24: required i64 min_buffer_size
-
-  25: required bool enable_orc_scanner
+  24: required bool enable_orc_scanner
 }

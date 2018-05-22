@@ -246,6 +246,14 @@ int BloomFilter::MinLogSpace(const size_t ndv, const double fpp) {
   return max(0, static_cast<int>(ceil(log2(m / 8))));
 }
 
+int BloomFilter::MinLogSpace(const size_t ndv) {
+  // Since BloomFilter sets BUCKET_WORDS bits on every insert, it matches the space
+  // efficiency of regular Bloom filters when the number of hash functions is
+  // BUCKET_WORDS. When the number of hash functions in a regular Bloom filter is k, the
+  // fpp is 2^-k
+  return MinLogSpace(ndv, 1.0 / (1 << BUCKET_WORDS));
+}
+
 double BloomFilter::FalsePositiveProb(const size_t ndv, const int log_bufferpool_space) {
   return pow(1 - exp((-1.0 * static_cast<double>(BUCKET_WORDS) * static_cast<double>(ndv))
                      / static_cast<double>(1ull << (log_bufferpool_space + 3))),
