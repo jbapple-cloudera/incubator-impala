@@ -156,8 +156,8 @@ from tpch_parquet.lineitem
 group by 1, 2
 having count(*) = 1
 ---- DISTRIBUTEDPLAN
-Max Per-Host Resource Reservation: Memory=125.00MB Threads=7
-Per-Host Resource Estimates: Memory=253.12MB
+Max Per-Host Resource Reservation: Memory=131.00MB Threads=7
+Per-Host Resource Estimates: Memory=259.12MB
 
 F04:PLAN FRAGMENT [UNPARTITIONED] hosts=1 instances=1
 |  Per-Host Resources: mem-estimate=0B mem-reservation=0B thread-reservation=1

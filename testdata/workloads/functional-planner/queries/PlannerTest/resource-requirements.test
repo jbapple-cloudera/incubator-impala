@@ -1938,11 +1938,11 @@ Per-Host Resources: mem-estimate=160.05MB mem-reservation=80.00MB thread-reserva
 select *
 from tpch.lineitem inner join tpch.orders on l_orderkey = o_orderkey
 ---- PLAN
-Max Per-Host Resource Reservation: Memory=51.00MB Threads=3
-Per-Host Resource Estimates: Memory=477.41MB
+Max Per-Host Resource Reservation: Memory=54.00MB Threads=3
+Per-Host Resource Estimates: Memory=480.41MB
 
 F00:PLAN FRAGMENT [UNPARTITIONED] hosts=1 instances=1
-|  Per-Host Resources: mem-estimate=477.41MB mem-reservation=51.00MB thread-reservation=3 runtime-filters-memory=1.00MB
+|  Per-Host Resources: mem-estimate=480.41MB mem-reservation=54.00MB thread-reservation=3 runtime-filters-memory=4.00MB
 PLAN-ROOT SINK
 |  mem-estimate=0B mem-reservation=0B thread-reservation=0
 |
@@ -1972,8 +1972,8 @@ PLAN-ROOT SINK
    mem-estimate=88.00MB mem-reservation=8.00MB thread-reservation=1
    tuple-ids=0 row-size=263B cardinality=6001215
 ---- DISTRIBUTEDPLAN
-Max Per-Host Resource Reservation: Memory=51.00MB Threads=5
-Per-Host Resource Estimates: Memory=477.41MB
+Max Per-Host Resource Reservation: Memory=54.00MB Threads=5
+Per-Host Resource Estimates: Memory=480.41MB
 
 F02:PLAN FRAGMENT [UNPARTITIONED] hosts=1 instances=1
 |  Per-Host Resources: mem-estimate=0B mem-reservation=0B thread-reservation=1
@@ -2018,8 +2018,8 @@ Per-Host Resources: mem-estimate=389.41MB mem-reservation=43.00MB thread-reserva
    mem-estimate=88.00MB mem-reservation=8.00MB thread-reservation=1
    tuple-ids=0 row-size=263B cardinality=6001215
 ---- PARALLELPLANS
-Max Per-Host Resource Reservation: Memory=102.00MB Threads=5
-Per-Host Resource Estimates: Memory=954.83MB
+Max Per-Host Resource Reservation: Memory=108.00MB Threads=5
+Per-Host Resource Estimates: Memory=960.83MB
 
 F02:PLAN FRAGMENT [UNPARTITIONED] hosts=1 instances=1
 |  Per-Host Resources: mem-estimate=0B mem-reservation=0B thread-reservation=1
@@ -2031,7 +2031,7 @@ PLAN-ROOT SINK
 |  tuple-ids=0,1 row-size=454B cardinality=5757710
 |
 F00:PLAN FRAGMENT [RANDOM] hosts=3 instances=6
-Per-Host Resources: mem-estimate=778.83MB mem-reservation=86.00MB thread-reservation=2 runtime-filters-memory=1.00MB
+Per-Host Resources: mem-estimate=784.83MB mem-reservation=92.00MB thread-reservation=2 runtime-filters-memory=4.00MB
 02:HASH JOIN [INNER JOIN, BROADCAST]
 |  hash-table-id=00
 |  hash predicates: l_orderkey = o_orderkey
@@ -4172,11 +4172,11 @@ join (
   ) v2 on v2.k3 = t2.o_orderkey
 ) v1 on v1.k3 = t1.o_orderkey
 ---- PLAN
-Max Per-Host Resource Reservation: Memory=99.00MB Threads=5
-Per-Host Resource Estimates: Memory=180.00MB
+Max Per-Host Resource Reservation: Memory=108.00MB Threads=5
+Per-Host Resource Estimates: Memory=189.00MB
 
 F00:PLAN FRAGMENT [UNPARTITIONED] hosts=1 instances=1
-|  Per-Host Resources: mem-estimate=180.00MB mem-reservation=99.00MB thread-reservation=5 runtime-filters-memory=3.00MB
+|  Per-Host Resources: mem-estimate=189.00MB mem-reservation=108.00MB thread-reservation=5 runtime-filters-memory=12.00MB
 PLAN-ROOT SINK
 |  mem-estimate=0B mem-reservation=0B thread-reservation=0
 |
