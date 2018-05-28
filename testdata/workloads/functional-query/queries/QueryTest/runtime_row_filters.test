@@ -329,6 +329,187 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 # source expr and target expr have different decimal types.
 ####################################################
 
+SET MEM_LIMIT=800MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=700MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=600MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=500MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=400MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=350MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=300MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=290MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=280MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=270MB;
+select count(*)
+from tpch_parquet.lineitem
+left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
+where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
+---- RESULTS
+1
+====
+
+
+---- QUERY
+####################################################
+# Test case 15: filter with a predicate that has different decimal precision between
+# lhs expr and rhs expr.
+# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
+# source expr and target expr have different decimal types.
+####################################################
+
+SET MEM_LIMIT=260MB;
 select count(*)
 from tpch_parquet.lineitem
 left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
