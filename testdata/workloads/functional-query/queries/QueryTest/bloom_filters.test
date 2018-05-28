@@ -34,7 +34,7 @@ select STRAIGHT_JOIN count(*) from (select * from tpch.lineitem a LIMIT 1) a
 0
 ---- RUNTIME_PROFILE
 row_regex: .*1 of 1 Runtime Filter Published.*
-row_regex: .*Filter 0 \(64.00 KB\).*
+row_regex: .*Filter 0 \(256.00 KB\).*
 ====
 ---- QUERY
 SET RUNTIME_FILTER_MODE=GLOBAL;
@@ -47,7 +47,7 @@ select STRAIGHT_JOIN count(*) from (select * from tpch.lineitem a LIMIT 1) a
 0
 ---- RUNTIME_PROFILE
 row_regex: .*1 of 1 Runtime Filter Published.*
-row_regex: .*Filter 0 \(256.00 KB\).*
+row_regex: .*Filter 0 \(1.00 MB\).*
 ====
 ---- QUERY
 SET RUNTIME_FILTER_MODE=GLOBAL;
@@ -60,7 +60,7 @@ select STRAIGHT_JOIN count(*) from (select * from tpch.lineitem a LIMIT 1) a
 0
 ---- RUNTIME_PROFILE
 row_regex: .*1 of 1 Runtime Filter Published.*
-row_regex: .*Filter 0 \(512.00 KB\).*
+row_regex: .*Filter 0 \(2.00 MB\).*
 ====
 ---- QUERY
 SET RUNTIME_FILTER_MODE=GLOBAL;
@@ -74,7 +74,7 @@ select STRAIGHT_JOIN count(*) from (select * from tpch.lineitem a LIMIT 1) a
 ---- RUNTIME_PROFILE
 # TODO: reenable once IMPALA-6338 is fixed
 #row_regex: .*1 of 1 Runtime Filter Published.*
-#row_regex: .*Filter 0 \(1.00 MB\).*
+#row_regex: .*Filter 0 \(4.00 MB\).*
 ====
 
 
@@ -132,9 +132,9 @@ SET RUNTIME_FILTER_MIN_SIZE=4KB;
 SET RUNTIME_BLOOM_FILTER_SIZE=4KB;
 # The min buffer size is set to 8KB for end to end tests. This query would
 # produce a 4KB filter if the min buffer size limit bound is not enforced.
-select STRAIGHT_JOIN count(*) from alltypes a join [SHUFFLE] alltypes b on a.id = b.id;
+select STRAIGHT_JOIN count(*) from alltypessmall a join [SHUFFLE] alltypessmall b on a.id = b.id;
 ---- RESULTS
-7300
+100
 ---- RUNTIME_PROFILE
 row_regex: .*1 of 1 Runtime Filter Published.*
 row_regex: .*Filter 0 \(8.00 KB\).*
