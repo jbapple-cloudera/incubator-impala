@@ -182,7 +182,7 @@ Per-Host Resources: mem-estimate=46.00MB mem-reservation=46.00MB thread-reservat
 |  tuple-ids=2 row-size=33B cardinality=4690314
 |
 F02:PLAN FRAGMENT [HASH(l_orderkey)] hosts=3 instances=3
-Per-Host Resources: mem-estimate=86.12MB mem-reservation=66.00MB thread-reservation=1 runtime-filters-memory=1.00MB
+Per-Host Resources: mem-estimate=89.12MB mem-reservation=69.00MB thread-reservation=1 runtime-filters-memory=4.00MB
 03:AGGREGATE [STREAMING]
 |  output: count(*)
 |  group by: l_orderkey, o_orderstatus
@@ -216,7 +216,7 @@ Per-Host Resources: mem-estimate=86.12MB mem-reservation=66.00MB thread-reservat
 |  tuple-ids=0 row-size=8B cardinality=6001215
 |
 F00:PLAN FRAGMENT [RANDOM] hosts=3 instances=3
-Per-Host Resources: mem-estimate=81.00MB mem-reservation=5.00MB thread-reservation=2 runtime-filters-memory=1.00MB
+Per-Host Resources: mem-estimate=84.00MB mem-reservation=8.00MB thread-reservation=2 runtime-filters-memory=4.00MB
 00:SCAN HDFS [tpch_parquet.lineitem, RANDOM]
    partitions=1/1 files=3 size=193.71MB
    runtime filters: RF000[bloom] -> l_orderkey
