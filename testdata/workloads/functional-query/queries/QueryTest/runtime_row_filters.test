@@ -312,7 +312,7 @@ from alltypes a join [SHUFFLE] alltypessmall c
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=350MB;
+SET MEM_LIMIT=355MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -330,7 +330,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=349MB;
+SET MEM_LIMIT=354MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -348,7 +348,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=348MB;
+SET MEM_LIMIT=353MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -366,7 +366,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=347MB;
+SET MEM_LIMIT=352MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -384,7 +384,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=346MB;
+SET MEM_LIMIT=351MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
