@@ -312,7 +312,7 @@ from alltypes a join [SHUFFLE] alltypessmall c
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=762MB;
+SET MEM_LIMIT=376MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -330,7 +330,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=506MB;
+SET MEM_LIMIT=372MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -348,7 +348,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=378MB;
+SET MEM_LIMIT=366MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -366,7 +366,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=314MB;
+SET MEM_LIMIT=362MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -384,7 +384,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=282MB;
+SET MEM_LIMIT=358MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -402,7 +402,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=266MB;
+SET MEM_LIMIT=354MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -420,7 +420,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=258MB;
+SET MEM_LIMIT=350MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -438,7 +438,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=254MB;
+SET MEM_LIMIT=346MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -456,7 +456,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=252MB;
+SET MEM_LIMIT=342MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -474,7 +474,7 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=251MB;
+SET MEM_LIMIT=338MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
@@ -492,7 +492,79 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
-SET MEM_LIMIT=250MB;
+SET MEM_LIMIT=334MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=330MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=326MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=322MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=318MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
     on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
