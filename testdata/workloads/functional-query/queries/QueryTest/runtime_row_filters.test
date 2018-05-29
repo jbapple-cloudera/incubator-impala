@@ -312,6 +312,186 @@ from alltypes a join [SHUFFLE] alltypessmall c
 
 SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
 SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=762MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=506MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=378MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=314MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=282MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=266MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=258MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=254MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=252MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
+SET MEM_LIMIT=251MB;
+select straight_join count(*)
+from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
+    on lower(upper(lower(upper(lower(l1.l_comment))))) = concat(l2.l_comment, 'foo')
+---- RESULTS
+0
+====
+
+
+---- QUERY
+###################################################
+# Test case 14: filter with expression that uses local allocations.
+# IMPALA-5885: the parquet scanner should free local allocations from upper()/lower().
+# mem_limit is calibrated so that the query fails if allocations are not freed.
+###################################################
+
+SET RUNTIME_FILTER_WAIT_TIME_MS=$RUNTIME_FILTER_WAIT_TIME_MS;
+SET RUNTIME_FILTER_MODE=GLOBAL;
 SET MEM_LIMIT=250MB;
 select straight_join count(*)
 from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
@@ -329,187 +509,6 @@ from tpch_parquet.lineitem l1 join tpch_parquet.lineitem l2
 # source expr and target expr have different decimal types.
 ####################################################
 
-SET MEM_LIMIT=800MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=700MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=600MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=500MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=400MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=350MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=300MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=290MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=280MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=270MB;
-select count(*)
-from tpch_parquet.lineitem
-left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
-where l_orderkey = 965 and l_extendedprice * l_tax = p_retailprice;
----- RESULTS
-1
-====
-
-
----- QUERY
-####################################################
-# Test case 15: filter with a predicate that has different decimal precision between
-# lhs expr and rhs expr.
-# IMPALA-5597: Runtime filter should be generated and assigned successfully when the
-# source expr and target expr have different decimal types.
-####################################################
-
-SET MEM_LIMIT=260MB;
 select count(*)
 from tpch_parquet.lineitem
 left join tpch_parquet.part on if(l_orderkey % 2 = 0, NULL, l_partkey) = p_partkey
