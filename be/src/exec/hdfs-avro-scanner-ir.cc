@@ -257,6 +257,14 @@ bool HdfsAvroScanner::ReadAvroDecimal(int slot_byte_size, uint8_t** data,
       SetStatusInvalidValue(TErrorCode::AVRO_INVALID_LENGTH, len.val);
       return false;
     }
+    DCHECK(slot_byte_size == 4 || slot_byte_size == 8 || slot_byte_size == 16)
+        << "Decimal slots can't be this size: " << slot_byte_size;
+    // The len.val == 0 case is special due to undefined behavior of shifting and memcpy,
+    // so we handle it separately.
+    if (len.val == 0) {
+      memset(slot, 0, slot_byte_size);
+      return true;
+    }
     // Decimals are encoded as big-endian integers. Copy the decimal into the most
     // significant bytes and then shift down to the correct position to sign-extend the
     // decimal.
@@ -283,7 +291,8 @@ bool HdfsAvroScanner::ReadAvroDecimal(int slot_byte_size, uint8_t** data,
         break;
       }
       default:
-        DCHECK(false) << "Decimal slots can't be this size: " << slot_byte_size;
+        DCHECK(false) << "Decimal slots can't be this size (" << slot_byte_size
+                      << "), and this DCHECK should have failed earlier in this method."
     }
   }
   *data += len.val;
