@@ -359,8 +359,8 @@ class MemTracker {
   /// If 'failed_allocation_size' is greater than zero, logs the allocation size. If
   /// 'failed_allocation_size' is zero, nothing about the allocation size is logged.
   /// If 'state' is non-NULL, logs the error to 'state'.
-  static Status MemLimitExceeded(MemTracker* mem_tracker, RuntimeState* state,
-      const std::string& details, int64_t failed_allocation = 0) WARN_UNUSED_RESULT;
+  Status MemLimitExceeded(RuntimeState* state, const std::string& details,
+      int64_t failed_allocation = 0) WARN_UNUSED_RESULT;
 
   void set_query_exec_finished() {
     DCHECK(is_query_mem_tracker_);
