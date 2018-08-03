@@ -241,7 +241,7 @@ char* Tuple::AllocateStrings(const char* err_ctx, RuntimeState* state,
   if (UNLIKELY(buf == nullptr)) {
     string details = Substitute("$0 failed to allocate $1 bytes for strings.",
         err_ctx, bytes);
-    *status = pool->mem_tracker()->MemLimitExceeded(state, details, bytes);
+    *status = MemTracker::MemLimitExceeded(pool->mem_tracker(), state, details, bytes);
     return nullptr;
   }
   return buf;
