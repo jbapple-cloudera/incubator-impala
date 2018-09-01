@@ -797,7 +797,7 @@ Status PhjBuilder::CodegenProcessBuildBatch(LlvmCodeGen* codegen, llvm::Function
   int replaced =
       codegen->ReplaceCallSites(process_build_batch_fn, eval_row_fn, "EvalBuildRow");
   #ifndef UBSAN
-  #error wat
+  //  #error wat
   #endif
   DCHECK_REPLACE_COUNT(replaced, 1);
 
