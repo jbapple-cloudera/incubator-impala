@@ -247,11 +247,6 @@ IF($ENV{ENABLE_IMPALA_IR_DEBUG_INFO} STREQUAL "true")
   SET(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-g")
 endif()
 
-  # Flags to pass to LLVM's opt to further optimize cross-compiled IR.
-  #  -inline: inline with low threshold to get rid of trivial accessor functions.
-  set(LLVM_OPT_IR_FLAGS "-inline" "-inlinehint-threshold=10" "-inline-threshold=10")
-endif()
-
 # Flags to pass to LLVM's opt to further optimize cross-compiled IR.
 #  -inline: inline with low threshold to get rid of trivial accessor functions.
 set(LLVM_OPT_IR_FLAGS "-inline" "-inlinehint-threshold=10" "-inline-threshold=10")
