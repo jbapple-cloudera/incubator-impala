@@ -803,7 +803,7 @@ Status PhjBuilder::CodegenProcessBuildBatch(LlvmCodeGen* codegen, llvm::Function
 
   replaced = codegen->ReplaceCallSites(
       process_build_batch_fn, insert_filters_fn, "InsertRuntimeFilters");
-  DCHECK_EQ(replaced, 1);
+  DCHECK_REPLACE_COUNT(replaced, 1);
 
   // Replace some hash table parameters with constants.
   HashTableCtx::HashTableReplacedConstants replaced_constants;

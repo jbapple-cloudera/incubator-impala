@@ -1090,7 +1090,7 @@ Status HdfsAvroScanner::CodegenDecodeAvroData(const HdfsScanNodeBase* node,
   llvm::Function* init_tuple_fn;
   RETURN_IF_ERROR(CodegenInitTuple(node, codegen, &init_tuple_fn));
   int replaced = codegen->ReplaceCallSites(fn, init_tuple_fn, "InitTuple");
-  DCHECK_EQ(replaced, 1);
+  DCHECK_REPLACE_COUNT(replaced, 1);
 
   replaced = codegen->ReplaceCallSites(fn, materialize_tuple_fn, "MaterializeTuple");
   DCHECK_REPLACE_COUNT(replaced, 1);
@@ -1105,12 +1105,12 @@ Status HdfsAvroScanner::CodegenDecodeAvroData(const HdfsScanNodeBase* node,
   RETURN_IF_ERROR(Tuple::CodegenCopyStrings(
       codegen, *node->tuple_desc(), &copy_strings_fn));
   replaced = codegen->ReplaceCallSites(fn, copy_strings_fn, "CopyStrings");
-  DCHECK_EQ(replaced, 1);
+  DCHECK_REPLACE_COUNT(replaced, 1);
 
   int tuple_byte_size = node->tuple_desc()->byte_size();
   replaced = codegen->ReplaceCallSitesWithValue(fn,
       codegen->GetI32Constant(tuple_byte_size), "tuple_byte_size");
-  DCHECK_EQ(replaced, 1);
+  DCHECK_REPLACE_COUNT(replaced, 1);
 
   fn->setName("DecodeAvroData");
   *decode_avro_data_fn = codegen->FinalizeFunction(fn);
