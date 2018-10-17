@@ -90,6 +90,11 @@ DEFINE_string(local_library_dir, "/tmp",
     "Scratch space for local fs operations. Currently used for copying "
     "UDF binaries locally from HDFS and also for initializing the timezone db");
 
+DEFINE_int64(be_test_timeout_s, 60L * 60L * 2L,
+    "Timeout limit for each backend test, in seconds. Backend tests typically run in "
+    "minutes or tens of minutes at worst, with the exception of expr-test when codegen "
+    "runs with ubsan.");
+
 // Defined by glog. This allows users to specify the log level using a glob. For
 // example -vmodule=*scanner*=3 would enable full logging for scanners. If redaction
 // is enabled, this option won't be allowed because some logging dumps table data
@@ -117,10 +122,6 @@ static unique_ptr<impala::Thread> pause_monitor;
 
 // Thread only used in backend tests to implement a test timeout.
 static unique_ptr<impala::Thread> be_timeout_thread;
-
-// Timeout after 2 hours - backend tests should generally run in minutes or tens of
-// minutes at worst.
-static const int64_t BE_TEST_TIMEOUT_S = 60L * 60L * 2L;
 
 [[noreturn]] static void LogMaintenanceThread() {
   while (true) {
@@ -251,8 +252,8 @@ void impala::InitCommonRuntime(int argc, char** argv, bool init_jvm,
   if (impala::TestInfo::is_be_test()) {
     thread_spawn_status = Thread::Create("common", "be-test-timeout-thread",
         []() {
-          SleepForMs(BE_TEST_TIMEOUT_S * 1000L);
-          LOG(FATAL) << "Backend test timed out after " << BE_TEST_TIMEOUT_S << "s";
+          SleepForMs(FLAGS_be_test_timeout_s * 1000L);
+          LOG(FATAL) << "Backend test timed out after " << FLAGS_be_test_timeout_s << "s";
         },
         &be_timeout_thread);
     if (!thread_spawn_status.ok()) CLEAN_EXIT_WITH_ERROR(thread_spawn_status.GetDetail());

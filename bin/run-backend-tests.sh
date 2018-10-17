@@ -28,7 +28,7 @@ export GTEST_OUTPUT="xml:$IMPALA_BE_TEST_LOGS_DIR/"
 # The backend unit tests currently do not work when HEAPCHECK is enabled.
 export HEAPCHECK=
 
-BE_TEST_ARGS=""
+: ${BE_TEST_ARGS:=""}
 if [[ -n "$SKIP_BE_TEST_PATTERN" ]]; then
   BE_TEST_ARGS="-E ${SKIP_BE_TEST_PATTERN}"
 fi
