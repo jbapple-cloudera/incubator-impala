@@ -298,6 +298,8 @@ if [[ ${BUILD_TSAN} -eq 1 ]]; then
   CMAKE_BUILD_TYPE=TSAN
 fi
 
+echo $CMAKE_BUILD_TYPE
+
 MAKE_IMPALA_ARGS+=" -build_type=${CMAKE_BUILD_TYPE}"
 
 # If we aren't kerberized then we certainly don't need to talk about
