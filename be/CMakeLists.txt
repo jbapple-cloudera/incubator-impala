@@ -236,7 +236,7 @@ if ("${CMAKE_BUILD_TYPE}" STREQUAL "ADDRESS_SANITIZER")
   SET(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-DADDRESS_SANITIZER")
 endif()
 
-if (UBSAN_CODEGEN OR ("${CMAKE_BUILD_TYPE}" STREQUAL "UBSAN_FULL"))
+if ("${CMAKE_BUILD_TYPE}" STREQUAL "UBSAN_FULL")
   set(CLANG_IR_CXX_FLAGS "${CLANG_IR_CXX_FLAGS}" "-DUNDEFINED_SANITIZER"
     "-fno-omit-frame-pointer" "-fsanitize=undefined" "-fno-wrapv" "-ggdb3"
     "-fno-sanitize=alignment,function,vptr,float-divide-by-zero,float-cast-overflow"

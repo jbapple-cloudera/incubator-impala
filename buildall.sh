@@ -292,13 +292,10 @@ if [[ ${BUILD_UBSAN} -eq 1 ]]; then
 fi
 if [[ ${BUILD_UBSAN_FULL} -eq 1 ]]; then
   CMAKE_BUILD_TYPE=UBSAN_FULL
-  MAKE_IMPALA_ARGS="${MAKE_IMPALA_ARGS} -ubsan_codegen"
 fi
 if [[ ${BUILD_TSAN} -eq 1 ]]; then
   CMAKE_BUILD_TYPE=TSAN
 fi
-
-echo $CMAKE_BUILD_TYPE
 
 MAKE_IMPALA_ARGS+=" -build_type=${CMAKE_BUILD_TYPE}"
 
