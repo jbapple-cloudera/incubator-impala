@@ -28,7 +28,7 @@ export IMPALA_MAVEN_OPTIONS="-U"
 
 source bin/bootstrap_development.sh
 
-if [[ ${CMAKE_BUILD_TYPE} -eq "UBSAN_FULL" ]]; then
+if [[ ${CMAKE_BUILD_TYPE} = "UBSAN_FULL" ]]; then
   export BE_TEST_ARGS="-be_test_timeout_s=14400"
 fi
 
