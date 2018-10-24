@@ -120,7 +120,13 @@ static unique_ptr<impala::Thread> be_timeout_thread;
 
 // Timeout after 2 hours - backend tests should generally run in minutes or tens of
 // minutes at worst.
+#ifdef UNDEFINED_SANITIZER_FULL
+static const int64_t BE_TEST_TIMEOUT_S = 60L * 60L * 8L;
+#else
 static const int64_t BE_TEST_TIMEOUT_S = 60L * 60L * 2L;
+#endif
+
+
 
 [[noreturn]] static void LogMaintenanceThread() {
   while (true) {
