@@ -29,7 +29,8 @@ export IMPALA_MAVEN_OPTIONS="-U"
 : ${UBSAN_DEATH:=true}
 export UBSAN_DEATH
 
-if test -v UBSAN_DEATH && [ "$UBSAN_DEATH" = "true" ]
+if test -v UBSAN_DEATH && [ "$UBSAN_DEATH" = "true" ] && \
+   test -v CMAKE_BUILD_TYPE && [[ "${CMAKE_BUILD_TYPE}" =~ 'UBSAN' ]]
 then
   export KILLIF="$(echo $$)"
 
