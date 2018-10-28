@@ -1,2 +1,2 @@
-src:ios_base.h
-src:TCompactProtocol.tcc
+src:*ios_base.h
+src:*TCompactProtocol.tcc
