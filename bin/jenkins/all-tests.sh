@@ -26,26 +26,30 @@ cd "${IMPALA_HOME}"
 
 export IMPALA_MAVEN_OPTIONS="-U"
 
-: ${UBSAN_DEATH:=true}
-export UBSAN_DEATH
+# When UBSAN_FAIL is "death", the logs are monitored for UBSAN errors. Any errors will
+# then cause this script to exit.
+#
+# When UBSAN_FAIL is "error", monitoring is delayed until tests have finished running.
+#
+# Any other value ignores UBSAN errors.
+: ${UBSAN_FAIL:=error}
+export UBSAN_FAIL
 
-if test -v UBSAN_DEATH && [ "$UBSAN_DEATH" = "true" ] && \
-   test -v CMAKE_BUILD_TYPE && [[ "${CMAKE_BUILD_TYPE}" =~ 'UBSAN' ]]
+if test -v CMAKE_BUILD_TYPE && [[ "${CMAKE_BUILD_TYPE}" =~ 'UBSAN' ]] \
+    && test [ "${UBSAN_FAIL}" = "death" ]
 then
-  export KILLIF="$(echo $$)"
+  export PID_TO_KILL="$(echo $$)"
+  mkdir -p "${IMPALA_HOME}/logs"
 
   function killer {
     while ! grep -rI ": runtime error: " "${IMPALA_HOME}/logs"
     do
       sleep 1
     done
-    kill -9 $KILLIF
+    kill -9 $PID_TO_KILL
   }
 
-  mkdir -p "${IMPALA_HOME}/logs"
-
   killer &
-
   disown
 fi
 
