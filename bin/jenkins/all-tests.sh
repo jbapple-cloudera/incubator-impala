@@ -26,6 +26,22 @@ cd "${IMPALA_HOME}"
 
 export IMPALA_MAVEN_OPTIONS="-U"
 
+export KILLIF="$(echo $$)"
+
+function killer {
+  while true
+  do
+    if grep -rI ": runtime error: " "${IMPALA_HOME}/logs"
+    then
+      kill -9 $KILLIF
+    fi
+  done
+}
+
+killer &
+
+disown
+
 source bin/bootstrap_development.sh
 
 RET_CODE=0
