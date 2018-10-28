@@ -111,20 +111,16 @@ SET(CXX_FLAGS_ADDRESS_SANITIZER
 # Set the flags to the undefined behavior sanitizer, also known as "ubsan"
 # Turn on sanitizer and debug symbols to get stack traces:
 SET(CXX_FLAGS_UBSAN "${CXX_CLANG_FLAGS} -Werror -ggdb3 -fno-omit-frame-pointer -fsanitize=undefined")
-# Ignore a number of noisy errors with too many false positives:
-SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-sanitize=alignment,function,vptr,float-divide-by-zero,float-cast-overflow")
 # Set preprocessor macros to facilitate initialization the relevant configuration.
 SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -DUNDEFINED_SANITIZER")
 # Calling getenv() in __ubsan_default_options doesn't work, likely because of
 # initialization ordering. We need to double-quote to create a macro that expands
 # to a string-literal.
 SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -DUNDEFINED_SANITIZER_SUPPRESSIONS=\\\"$ENV{IMPALA_HOME}/bin/ubsan-suppressions.txt\\\"")
-# TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO                                       
-IF("$ENV{UBSAN_DEATH}" STREQUAL "true")
-  SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-sanitize-recover=undefined")
-ENDIF()
 # Add flags to enable symbol resolution in the stack traces:
 SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -rtlib=compiler-rt -lgcc_s")
+# Ignore a number of noisy errors with too many false positives:
+SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-sanitize=alignment,function,vptr,float-divide-by-zero,float-cast-overflow")
 # Don't enforce wrapped signed integer arithmetic so that the sanitizer actually sees
 # undefined wrapping:
 SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-wrapv")

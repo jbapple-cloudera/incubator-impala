@@ -76,9 +76,6 @@ LZO_CMAKE_ARGS=
 # commandline.
 : ${EXPLORATION_STRATEGY:=core}
 : ${CMAKE_BUILD_TYPE:=Debug}
-: ${UBSAN_DEATH:=true}
-export UBSAN_DEATH
-
 
 # parse command line options
 while [ -n "$*" ]
@@ -131,9 +128,6 @@ do
       ;;
     -full_ubsan)
       BUILD_UBSAN_FULL=1
-      ;;
-    -ubsan_death)
-      export UBSAN_DEATH=true
       ;;
     -tsan)
       BUILD_TSAN=1

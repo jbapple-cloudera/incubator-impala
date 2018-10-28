@@ -26,23 +26,29 @@ cd "${IMPALA_HOME}"
 
 export IMPALA_MAVEN_OPTIONS="-U"
 
-export KILLIF="$(echo $$)"
+: ${UBSAN_DEATH:=true}
+export UBSAN_DEATH
 
-function killer {
-  while true
-  do
-    if grep -rI ": runtime error: " "${IMPALA_HOME}/logs"
-    then
-      kill -9 $KILLIF
-    fi
-  done
-}
+if test -v UBSAN_DEATH && [ "$UBSAN_DEATH" = "true" ]
+then
+  export KILLIF="$(echo $$)"
 
-mkdir -p "${IMPALA_HOME}/logs"
+  function killer {
+    while true
+    do
+      if grep -rI ": runtime error: " "${IMPALA_HOME}/logs"
+      then
+        kill -9 $KILLIF
+      fi
+    done
+  }
 
-killer &
+  mkdir -p "${IMPALA_HOME}/logs"
 
-disown
+  killer &
+
+  disown
+fi
 
 source bin/bootstrap_development.sh
 

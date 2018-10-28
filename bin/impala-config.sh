@@ -34,8 +34,6 @@
 # this script because scripts outside this repository may need to be updated and that
 # is not practical at this time.
 
-export UBSAN_DEATH=true
-
 if ! [[ "'$IMPALA_HOME'" =~ [[:blank:]] ]]; then
   if [ -z "$IMPALA_HOME" ]; then
     if [[ ! -z "$ZSH_NAME" ]]; then
