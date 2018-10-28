@@ -120,7 +120,7 @@ SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -DUNDEFINED_SANITIZER")
 # to a string-literal.
 SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -DUNDEFINED_SANITIZER_SUPPRESSIONS=\\\"$ENV{IMPALA_HOME}/bin/ubsan-suppressions.txt\\\"")
 # TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO                                       
-IF($ENV{UBSAN_DEATH} STREQUAL "true")
+IF("$ENV{UBSAN_DEATH}" STREQUAL "true")
   SET(CXX_FLAGS_UBSAN "${CXX_FLAGS_UBSAN} -fno-sanitize-recover=undefined")
 ENDIF()
 # Add flags to enable symbol resolution in the stack traces:

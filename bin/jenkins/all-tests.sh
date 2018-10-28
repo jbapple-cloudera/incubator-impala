@@ -38,6 +38,8 @@ function killer {
   done
 }
 
+mkdir -p "${IMPALA_HOME}/logs"
+
 killer &
 
 disown
