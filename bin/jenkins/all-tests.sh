@@ -36,7 +36,7 @@ export IMPALA_MAVEN_OPTIONS="-U"
 export UBSAN_FAIL
 
 if test -v CMAKE_BUILD_TYPE && [[ "${CMAKE_BUILD_TYPE}" =~ 'UBSAN' ]] \
-    && test [ "${UBSAN_FAIL}" = "death" ]
+    && [ "${UBSAN_FAIL}" = "death" ]
 then
   export PID_TO_KILL="$(echo $$)"
   mkdir -p "${IMPALA_HOME}/logs"

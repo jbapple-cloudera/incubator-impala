@@ -22,7 +22,7 @@ set -euo pipefail
 trap 'echo Error in $0 at line $LINENO: $(cd "'$PWD'" && awk "NR == $LINENO" $0)' ERR
 
 if test -v CMAKE_BUILD_TYPE && [[ "${CMAKE_BUILD_TYPE}" =~ 'UBSAN' ]] \
-    && test [ "${UBSAN_FAIL}" = "error" ] \
+    && [ "${UBSAN_FAIL}" = "error" ] \
     && { grep -rI ": runtime error: " "${IMPALA_HOME}/logs" 2>&1 | sort | uniq \
      | tee logs/ubsan.txt ; }
 then
