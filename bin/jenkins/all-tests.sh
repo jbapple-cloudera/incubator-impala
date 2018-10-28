@@ -35,13 +35,11 @@ then
   export KILLIF="$(echo $$)"
 
   function killer {
-    while true
+    while ! grep -rI ": runtime error: " "${IMPALA_HOME}/logs"
     do
-      if grep -rI ": runtime error: " "${IMPALA_HOME}/logs"
-      then
-        kill -9 $KILLIF
-      fi
+      sleep 1
     done
+    kill -9 $KILLIF
   }
 
   mkdir -p "${IMPALA_HOME}/logs"
